@@ -15,12 +15,12 @@ module Neo
         , getWIFFromHexPrivateKey
         , getBinaryPrivateKeyFromWIF
         , getHexPrivateKeyFromWIF
-          --        , getAccountFromPrivateKey
+        , getAccountFromBinaryPrivateKey
         )
 
 {-| Elm Neo provides tools for the neo wallet and crypto.
 
-@docs BinaryPrivateKey, HexPrivateKey, Wif, HexPublicKey, BinaryPublicKey, generateBinaryPrivateKey, generateHexPrivateKey, getWIFFromBinaryPrivateKey, getWIFFromHexPrivateKey, getBinaryPrivateKeyFromWIF ,PublicKeyHash, ProgramHash, Address, Account, getHexPrivateKeyFromWIF
+@docs BinaryPrivateKey, HexPrivateKey, Wif, HexPublicKey, BinaryPublicKey, generateBinaryPrivateKey, generateHexPrivateKey, getWIFFromBinaryPrivateKey, getWIFFromHexPrivateKey, getBinaryPrivateKeyFromWIF ,PublicKeyHash, ProgramHash, Address, Account, getHexPrivateKeyFromWIF, getAccountFromBinaryPrivateKey
 
 -}
 
@@ -176,11 +176,11 @@ getHexPrivateKeyFromWIF wif =
 
 
 
---{-| getAccountFromPrivateKey
---
---gets wallet info from a binary private key
---
----}
---getAccountFromPrivateKey : BinaryPrivateKey -> Account
---getAccountFromPrivateKey binaryPrivateKey =
---    Native.Neo.getAccountFromPrivateKey binaryPrivateKey
+{-| getAccountFromBinaryPrivateKey
+
+gets wallet info from a binary private key
+
+-}
+getAccountFromBinaryPrivateKey : BinaryPrivateKey -> Account
+getAccountFromBinaryPrivateKey binaryPrivateKey =
+    Native.Neo.getAccountFromBinaryPrivateKey binaryPrivateKey

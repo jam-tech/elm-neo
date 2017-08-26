@@ -88,13 +88,30 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
+    var getAccountFromBinaryPrivateKey = function (binaryPrivateKey) {
+        try {
+            return {
+                binaryPrivateKey: binaryPrivateKey
+                , hexPrivateKey: ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey))
+                , binaryPublicKey: _elm_lang$core$Native_List.fromArray([])
+                , hexPublicKey: ""
+                , publicKeyHash: ""
+                , programHash: ""
+                , address: ""
+            };
+        } catch (e) {
+            return "something went wrong: " + e;
+        }
+    };
+
     return {
-        generateBinaryPrivateKey: generateBinaryPrivateKey(),
-        generateHexPrivateKey: generateHexPrivateKey(),
-        getWIFFromBinaryPrivateKey: getWIFFromBinaryPrivateKey,
-        getWIFFromHexPrivateKey: getWIFFromHexPrivateKey,
-        getBinaryPrivateKeyFromWIF: getBinaryPrivateKeyFromWIF,
-        getHexPrivateKeyFromWIF: getHexPrivateKeyFromWIF
+        generateBinaryPrivateKey       : generateBinaryPrivateKey(),
+        generateHexPrivateKey          : generateHexPrivateKey(),
+        getWIFFromBinaryPrivateKey     : getWIFFromBinaryPrivateKey,
+        getWIFFromHexPrivateKey        : getWIFFromHexPrivateKey,
+        getBinaryPrivateKeyFromWIF     : getBinaryPrivateKeyFromWIF,
+        getHexPrivateKeyFromWIF        : getHexPrivateKeyFromWIF,
+        getAccountFromBinaryPrivateKey : getAccountFromBinaryPrivateKey
     }
 
 }());

@@ -10,22 +10,30 @@ import Neo exposing (..)
 
 main : Test.Runner.Html.TestProgram
 main =
-    [ suite
+    [ privateAndPublicKeys
+    , accounts
     ]
         |> concat
         |> Test.Runner.Html.run
 
 
-suite : Test
-suite =
-    describe "Neo"
+privateAndPublicKeys : Test
+privateAndPublicKeys =
+    describe "Private and public keys"
         [ it "should generate a hex private key" (Expect.equal (String.length generateHexPrivateKey) 64)
         , it "should generate a binary private key" (Expect.equal (List.length generateBinaryPrivateKey) 32)
         , it "should get a wif from the binary private key" (Expect.equal (getWIFFromBinaryPrivateKey binaryPrivateKey) "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU")
         , it "should get a wif from the hex private key" (Expect.equal (getWIFFromHexPrivateKey hexPrivateKey) "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU")
         , it "should get a binary private key from a wif" (Expect.equal (getBinaryPrivateKeyFromWIF wif) binaryPrivateKey)
         , it "should get a hex private key from a wif" (Expect.equal (getHexPrivateKeyFromWIF wif) hexPrivateKey)
---        , it "should get a binary private key from a wif" (Expect.equal (getAccountFromPrivateKey binaryPrivateKey) account)
+        ]
+
+
+accounts : Test
+accounts =
+    describe "Wallet account info"
+        [ it "it should return a binary private key" (Expect.equal (getAccountFromBinaryPrivateKey binaryPrivateKey) account)
+
         ]
 
 
@@ -36,8 +44,7 @@ binaryPrivateKey =
 
 binaryPublicKey : BinaryPublicKey
 binaryPublicKey =
-    [ 198, 92, 83, 247, 95, 217, 95, 1, 185, 25, 130, 202, 248, 55, 239, 113, 163, 210, 104, 87, 71, 227, 145, 177, 145, 182, 217, 88, 1, 181, 8, 136 ]
-
+    []
 
 hexPrivateKey : HexPrivateKey
 hexPrivateKey =
@@ -51,10 +58,18 @@ wif =
 account : Account
 account =
     { binaryPrivateKey = binaryPrivateKey
-    , hexPrivateKey = ""
+    , hexPrivateKey = hexPrivateKey
     , binaryPublicKey = binaryPublicKey
     , hexPublicKey = ""
     , publicKeyHash = ""
     , programHash = ""
     , address = ""
     }
+
+--++++++++
+--[ { privatekey: 'c65c53f75fd95f01b91982caf837ef71a3d2685747e391b191b6d95801b50888',
+--    publickeyEncoded: '02573c60647d0f44b870d58fd73ba8831c645f1a728534e35671cb5714950753d0',
+--    publickeyHash: '6375ccb1d4b858877b3aa73529774041d7173fc3',
+--    programHash: '8d7e6a027f7586747da6f5f3b820135360472256',
+--    address: 'AUg2MxB9uLfFSGy1EpMiGR75KFAmhUjAH4' } ]
+--++++++++
