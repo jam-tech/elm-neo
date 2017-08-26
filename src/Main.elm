@@ -2,11 +2,12 @@ module Main exposing (..)
 
 
 import Html exposing (Html, text)
-import Neo exposing (generatePrivateKey)
+import Neo exposing (generatePrivateKey, getWIFFromBinaryPrivateKey)
 
 main : Html a
 main =
     let
-     _ = Debug.log "priv key" generatePrivateKey
+     pk = Debug.log "priv key" generatePrivateKey
+     wif = Debug.log "wif" (getWIFFromBinaryPrivateKey pk)
     in
       text "Woop"
