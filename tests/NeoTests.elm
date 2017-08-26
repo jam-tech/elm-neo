@@ -33,9 +33,16 @@ accounts : Test
 accounts =
     describe "Wallet account info"
         [ it "it should return a binary private key" (Expect.equal (getAccountFromBinaryPrivateKey binaryPrivateKey) account)
-
+        , it "it should return a hex private key" (Expect.equal (getAccountFromHexPrivateKey hexPrivateKey) account)
+--        , it "it should return a binary private key" (Expect.equal (getAccountFromBinaryPublicKey binaryPublicKey) account)
+--        , it "it should return a binary private key" (Expect.equal (getAccountFromHexPublicKey hexPublicKey) account)
         ]
 
+--transactions : Test
+--transactions =
+--    describe "Wallet account info"
+--        [ it "it should return a binary private key" (Expect.equal (getAccountFromBinaryPrivateKey binaryPrivateKey) account)
+--        ]
 
 binaryPrivateKey : BinaryPrivateKey
 binaryPrivateKey =
@@ -44,15 +51,18 @@ binaryPrivateKey =
 
 binaryPublicKey : BinaryPublicKey
 binaryPublicKey =
-    [2, 87, 60, 96, 100, 125, 15, 68, 184, 112, 213, 143, 215, 59, 168, 131, 28, 100, 95, 26, 114, 133, 52, 227, 86, 113, 203, 87, 20, 149, 7, 83, 208]
+    [ 2, 87, 60, 96, 100, 125, 15, 68, 184, 112, 213, 143, 215, 59, 168, 131, 28, 100, 95, 26, 114, 133, 52, 227, 86, 113, 203, 87, 20, 149, 7, 83, 208 ]
+
 
 hexPrivateKey : HexPrivateKey
 hexPrivateKey =
-  "c65c53f75fd95f01b91982caf837ef71a3d2685747e391b191b6d95801b50888"
+    "c65c53f75fd95f01b91982caf837ef71a3d2685747e391b191b6d95801b50888"
+
 
 hexPublicKey : HexPublicKey
 hexPublicKey =
-  "02573c60647d0f44b870d58fd73ba8831c645f1a728534e35671cb5714950753d0"
+    "02573c60647d0f44b870d58fd73ba8831c645f1a728534e35671cb5714950753d0"
+
 
 wif : Wif
 wif =
@@ -69,4 +79,3 @@ account =
     , programHash = "8d7e6a027f7586747da6f5f3b820135360472256"
     , address = "AUg2MxB9uLfFSGy1EpMiGR75KFAmhUjAH4"
     }
-

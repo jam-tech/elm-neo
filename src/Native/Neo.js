@@ -26006,10 +26006,21 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         try {
 
             var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
+            return getAccountFromHexPrivateKey(hexPrivateKey);
+
+        } catch (e) {
+            return "something went wrong: " + e;
+        }
+    };
+
+    var getAccountFromHexPrivateKey = function (hexPrivateKey) {
+        try {
 
             if (hexPrivateKey.length !== 64) {
                 return -1;
             }
+
+            var binaryPrivateKey = _elm_lang$core$Native_List.fromArray(hexstring2ab(hexPrivateKey));
 
             var binaryPublicKey = getBinaryPublicKeyFromHexPrivateKey(hexPrivateKey, true);
 
@@ -26022,8 +26033,6 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
             var programHash = getHash(script);
 
             var address = toAddress(hexstring2ab(programHash.toString()));
-
-            console.log("address: ", address);
 
             return {
                 binaryPrivateKey: binaryPrivateKey
@@ -26046,7 +26055,8 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         getWIFFromHexPrivateKey        : getWIFFromHexPrivateKey,
         getBinaryPrivateKeyFromWIF     : getBinaryPrivateKeyFromWIF,
         getHexPrivateKeyFromWIF        : getHexPrivateKeyFromWIF,
-        getAccountFromBinaryPrivateKey : getAccountFromBinaryPrivateKey
+        getAccountFromBinaryPrivateKey : getAccountFromBinaryPrivateKey,
+        getAccountFromHexPrivateKey    : getAccountFromHexPrivateKey
     }
 
 }());
