@@ -32,10 +32,10 @@ privateAndPublicKeys =
 accounts : Test
 accounts =
     describe "Wallet account info"
-        [ it "it should return a binary private key" (Expect.equal (getAccountFromBinaryPrivateKey binaryPrivateKey) account)
-        , it "it should return a hex private key" (Expect.equal (getAccountFromHexPrivateKey hexPrivateKey) account)
---        , it "it should return a binary private key" (Expect.equal (getAccountFromBinaryPublicKey binaryPublicKey) account)
---        , it "it should return a binary private key" (Expect.equal (getAccountFromHexPublicKey hexPublicKey) account)
+        [ it "it should return an account given a binary private key" (Expect.equal (getAccountFromBinaryPrivateKey binaryPrivateKey) account)
+        , it "it should return an account given a hex private key" (Expect.equal (getAccountFromHexPrivateKey hexPrivateKey) account)
+        , it "it should return an account given a binary public key" (Expect.equal (getAccountFromBinaryPublicKey binaryPublicKey) publicAccount)
+        , it "it should return an account given a hex public key" (Expect.equal (getAccountFromHexPublicKey hexPublicKey) publicAccount)
         ]
 
 --transactions : Test
@@ -73,6 +73,17 @@ account : Account
 account =
     { binaryPrivateKey = binaryPrivateKey
     , hexPrivateKey = hexPrivateKey
+    , binaryPublicKey = binaryPublicKey
+    , hexPublicKey = hexPublicKey
+    , publicKeyHash = "6375ccb1d4b858877b3aa73529774041d7173fc3"
+    , programHash = "8d7e6a027f7586747da6f5f3b820135360472256"
+    , address = "AUg2MxB9uLfFSGy1EpMiGR75KFAmhUjAH4"
+    }
+
+publicAccount : Account
+publicAccount =
+    { binaryPrivateKey = []
+    , hexPrivateKey = ""
     , binaryPublicKey = binaryPublicKey
     , hexPublicKey = hexPublicKey
     , publicKeyHash = "6375ccb1d4b858877b3aa73529774041d7173fc3"

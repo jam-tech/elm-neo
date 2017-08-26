@@ -125,6 +125,24 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         return all_crypto.base58.encode(datas);
     };
 
+    var verifyPublicKeyEncoded = function(binaryPublicKey){
+        var publicKeyArray = hexstring2ab( binaryPublicKey);
+        if ( publicKeyArray[0] !== 0x02 && publicKeyArray[0] !== 0x03 ) {
+            return false;
+        }
+
+        var ecparams = all_crypto.ecurve.getCurveByName('secp256r1');
+        var curvePt = all_crypto.ecurve.Point.decodeFrom(ecparams,new all_crypto.buffer.Buffer(binaryPublicKey,"hex"));
+        var curvePtX = curvePt.affineX.toBuffer(32);
+        var curvePtY = curvePt.affineY.toBuffer(32);
+
+        if ( publicKeyArray[0] === 0x02 && curvePtY[31] % 2 === 0 ) {
+            return true;
+        }
+
+        return publicKeyArray[0] === 0x03 && curvePtY[31] % 2 === 1;
+    };
+
     var getAccountFromBinaryPrivateKey = function (binaryPrivateKey) {
         try {
 
@@ -171,6 +189,87 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
+    var getPublicKeyEncoded = function(hexPublicKey){
+        var publicKeyArray = hexstring2ab(hexPublicKey);
+        if ( publicKeyArray[64] % 2 === 1 ) {
+            return "03" + ab2hexstring(publicKeyArray.slice(1, 33));
+        } else {
+            return "02" + ab2hexstring(publicKeyArray.slice(1, 33));
+        }
+    };
+
+    var getAccountFromBinaryPublicKey = function (binaryPublicKey) {
+        try {
+
+            var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
+
+            if (!verifyPublicKeyEncoded(encodedPublicKey)) {
+                // verify failed.
+                return -1
+            }
+
+            var binaryPrivateKey = _elm_lang$core$Native_List.fromArray([]);
+
+            var hexPublicKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey));
+
+            var publicKeyHash = getHash(hexPublicKey);
+
+            var script = createSignatureScript(encodedPublicKey);
+
+            var programHash = getHash(script);
+
+            var address = toAddress(hexstring2ab(programHash.toString()));
+
+            return {
+                binaryPrivateKey: binaryPrivateKey
+                , hexPrivateKey: ""
+                , binaryPublicKey: binaryPublicKey
+                , hexPublicKey: hexPublicKey
+                , publicKeyHash: publicKeyHash
+                , programHash: programHash
+                , address: address
+            };
+        } catch (e) {
+            return "something went wrong: " + e;
+        }
+    };
+
+    var getAccountFromHexPublicKey = function (hexPublicKey) {
+        try {
+
+            var binaryPublicKey = hexstring2ab(hexPublicKey);
+
+            var encodedPublicKey = getPublicKeyEncoded(hexPublicKey);
+
+            if (!verifyPublicKeyEncoded(encodedPublicKey)) {
+                // verify failed.
+                return -1
+            }
+
+            var binaryPrivateKey = _elm_lang$core$Native_List.fromArray([]);
+
+            var publicKeyHash = getHash(hexPublicKey);
+
+            var script = createSignatureScript(encodedPublicKey);
+
+            var programHash = getHash(script);
+
+            var address = toAddress(hexstring2ab(programHash.toString()));
+
+            return {
+                binaryPrivateKey: binaryPrivateKey
+                , hexPrivateKey: ""
+                , binaryPublicKey: _elm_lang$core$Native_List.fromArray(binaryPublicKey)
+                , hexPublicKey: hexPublicKey
+                , publicKeyHash: publicKeyHash
+                , programHash: programHash
+                , address: address
+            };
+        } catch (e) {
+            return "something went wrong: " + e;
+        }
+    };
+
     return {
         generateBinaryPrivateKey       : generateBinaryPrivateKey(),
         generateHexPrivateKey          : generateHexPrivateKey(),
@@ -179,7 +278,9 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         getBinaryPrivateKeyFromWIF     : getBinaryPrivateKeyFromWIF,
         getHexPrivateKeyFromWIF        : getHexPrivateKeyFromWIF,
         getAccountFromBinaryPrivateKey : getAccountFromBinaryPrivateKey,
-        getAccountFromHexPrivateKey    : getAccountFromHexPrivateKey
+        getAccountFromHexPrivateKey    : getAccountFromHexPrivateKey,
+        getAccountFromBinaryPublicKey  : getAccountFromBinaryPublicKey,
+        getAccountFromHexPublicKey     : getAccountFromHexPublicKey
     }
 
 }());
