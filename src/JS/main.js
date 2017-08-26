@@ -1,6 +1,9 @@
 
 
+
 var buffer = require('buffer');
+
+var cryptojs = require('crypto-js');
 
 var secureRandom = require('secure-random');
 
@@ -10,8 +13,9 @@ var base58   = require('base-x')(BASE58);
 var wif = require('wif');
 
 
-
+exports.buffer       = buffer;
 exports.secureRandom = secureRandom;
 exports.base58       = base58;
 exports.wif          = wif;
-exports.buffer       = buffer;
+exports.cryptojs     = cryptojs;
+
