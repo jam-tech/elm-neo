@@ -14,12 +14,12 @@ import Native.Neo
 
 {-| generatePrivateKey
 
-uses window.crypto to generate a private key
+uses secure-random to generate a private key
 
 -}
 generatePrivateKey : List Int
 generatePrivateKey =
-    List.reverse Native.Neo.generatePrivateKey
+    Native.Neo.generatePrivateKey
 
 
 

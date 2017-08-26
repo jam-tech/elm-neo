@@ -3,19 +3,12 @@ module NeoTests exposing (..)
 import Json.Encode as JE
 import Test exposing (..)
 import Expect exposing (Expectation)
+import TestHelper exposing (it)
 import Neo
-
-it : String -> Expect.Expectation -> Test
-it title content =
-    test title <| \() -> content
-
-
-
--- Tests
 
 
 suite : Test
 suite =
-    describe "JsonTransform"
-        [ it "pass" (Expect.equal (List.length Neo.generatePrivateKey) 32)
-           ]
+    describe "Neo"
+        [ it "should generate private key" (Expect.equal (List.length Neo.generatePrivateKey) 32)
+        ]
