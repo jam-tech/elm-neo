@@ -7267,7 +7267,7 @@ var ab2hexstring = function(arr){
 
 var _kingsleyh$elm_neo$Native_Neo = (function () {
 
-    var generatePrivateKey = function () {
+    var generateBinaryPrivateKey = function () {
         try {
             return _elm_lang$core$Native_List.fromArray(all_crypto.secureRandom.randomUint8Array(32));
         } catch (e) {
@@ -7277,7 +7277,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
     var getWIFFromBinaryPrivateKey = function (binaryPrivateKey) {
         try {
-          var hexKey = ab2hexstring(binaryPrivateKey);
+          var hexKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
           return all_crypto.wif.encode(128, new all_crypto.buffer.Buffer(hexKey, 'hex'), true);
         } catch (e) {
             return "something went wrong: " + e;
@@ -7285,7 +7285,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     };
 
     return {
-        generatePrivateKey: generatePrivateKey(),
+        generateBinaryPrivateKey: generateBinaryPrivateKey(),
         getWIFFromBinaryPrivateKey: getWIFFromBinaryPrivateKey
     }
 

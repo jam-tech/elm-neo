@@ -1,26 +1,26 @@
 module Neo
     exposing
-        ( generatePrivateKey
+        ( generateBinaryPrivateKey
         , getWIFFromBinaryPrivateKey
         )
 
 {-| Elm Neo provides tools for the neo wallet and crypto.
 
-@docs generatePrivateKey, getWIFFromBinaryPrivateKey
+@docs generateBinaryPrivateKey, getWIFFromBinaryPrivateKey
 
 -}
 
 import Native.Neo
 
 
-{-| generatePrivateKey
+{-| generateBinaryPrivateKey
 
 uses secure-random to generate a private key
 
 -}
-generatePrivateKey : List Int
-generatePrivateKey =
-    Native.Neo.generatePrivateKey
+generateBinaryPrivateKey : List Int
+generateBinaryPrivateKey =
+    Native.Neo.generateBinaryPrivateKey
 
 
 {-| getWIFFromBinaryPrivateKey
