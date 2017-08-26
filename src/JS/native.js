@@ -88,16 +88,74 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
+    var getBinaryPublicKeyFromHexPrivateKey = function(hexPrivateKey, shouldEncode){
+
+        var ecparams = all_crypto.ecurve.getCurveByName('secp256r1');
+        var curvePt = ecparams.G.multiply(all_crypto.BigInteger.fromBuffer(hexstring2ab(hexPrivateKey)));
+
+        return curvePt.getEncoded(shouldEncode);
+    };
+
+
+    var getHash = function(item) {
+        var ProgramHexString = all_crypto.cryptojs.enc.Hex.parse(item);
+        var ProgramSha256 = all_crypto.cryptojs.SHA256(ProgramHexString);
+        return all_crypto.cryptojs.RIPEMD160(ProgramSha256).toString();
+    };
+
+    var createSignatureScript = function(binaryPublicKey) {
+        return "21" + binaryPublicKey.toString('hex') + "ac";
+    };
+
+    var toAddress = function(programHash){
+
+        var data = new Uint8Array(1 + programHash.length);
+        data.set([23]);
+        data.set(programHash, 1);
+
+        var ProgramHexString = all_crypto.cryptojs.enc.Hex.parse(ab2hexstring(data));
+        var ProgramSha256 = all_crypto.cryptojs.SHA256(ProgramHexString);
+        var ProgramSha256_2 = all_crypto.cryptojs.SHA256(ProgramSha256);
+        var ProgramSha256Buffer = hexstring2ab(ProgramSha256_2.toString());
+
+        var datas = new Uint8Array(1 + programHash.length + 4);
+        datas.set(data);
+        datas.set(ProgramSha256Buffer.slice(0, 4), 21);
+
+        return all_crypto.base58.encode(datas);
+    };
+
     var getAccountFromBinaryPrivateKey = function (binaryPrivateKey) {
         try {
+
+            var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
+
+            if (hexPrivateKey.length !== 64) {
+                return -1;
+            }
+
+            var binaryPublicKey = getBinaryPublicKeyFromHexPrivateKey(hexPrivateKey, true);
+
+            var hexPublicKey = ab2hexstring(binaryPublicKey);
+
+            var publicKeyHash = getHash(binaryPublicKey.toString('hex'));
+
+            var script = createSignatureScript(binaryPublicKey);
+
+            var programHash = getHash(script);
+
+            var address = toAddress(hexstring2ab(programHash.toString()));
+
+            console.log("address: ", address);
+
             return {
                 binaryPrivateKey: binaryPrivateKey
-                , hexPrivateKey: ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey))
-                , binaryPublicKey: _elm_lang$core$Native_List.fromArray([])
-                , hexPublicKey: ""
-                , publicKeyHash: ""
-                , programHash: ""
-                , address: ""
+                , hexPrivateKey: hexPrivateKey
+                , binaryPublicKey: _elm_lang$core$Native_List.fromArray(binaryPublicKey)
+                , hexPublicKey: hexPublicKey
+                , publicKeyHash: publicKeyHash
+                , programHash: programHash
+                , address: address
             };
         } catch (e) {
             return "something went wrong: " + e;
