@@ -32,11 +32,11 @@ Neo.getWIFFromHexPrivateKey
 Neo.getBinaryPrivateKeyFromWIF
 Neo.getHexPrivateKeyFromWIF
 
--- get binary public key
+-- get binary public key from private key
 Neo.getBinaryPublicKeyFromHexPrivateKey hexPrivateKey True
 Neo.getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey True
 
--- get hex public key
+-- get hex public key from private key
 Neo.getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey True
 Neo.getHexPublicKeyFromHexPrivateKey hexPrivateKey True
 ```
@@ -144,7 +144,25 @@ signatureData =
 
 ### Contracts
 
-* coming soon 
+```
+contractData : ContractData
+contractData =
+    let
+        fromBinaryPrivateKey =
+            getBinaryPrivateKeyFromWIF "L1QqQJnpBwbsPGAuutuzPTac8piqvbR1HRjrY5qHup48TBCBFe4g"
+
+        fromBinaryPublicKey =
+            getBinaryPublicKeyFromBinaryPrivateKey fromBinaryPrivateKey True
+
+        transactionData =
+            expectedTransactionDataGasNotEqual
+
+        signatureData =
+            expectedSignatureData
+    in
+        getContractData transactionData signatureData fromBinaryPublicKey
+
+``` 
 
 ## Install
 

@@ -534,19 +534,19 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
             var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
 
             var signatureScript = createSignatureScript(encodedPublicKey);
+
             // sign num
-            var data = $txData + "01";
+            var data = transactionData + "01";
             // sign struct len
             data = data + "41";
             // sign data len
             data = data + "40";
             // sign data
-            data = data + $sign;
+            data = data + signatureData;
             // Contract data len
             data = data + "23";
             // script data
             data = data + signatureScript;
-            console.log("contract data", data);
             return data;
 
         } catch (e) {

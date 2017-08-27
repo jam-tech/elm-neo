@@ -14,7 +14,7 @@ main =
     , accounts
     , transactions
     , signatures
---    , contracts
+    , contracts
     , keyConversions
     ]
         |> concat
@@ -32,14 +32,16 @@ privateAndPublicKeys =
         , it "should get a hex private key from a wif" (Expect.equal (getHexPrivateKeyFromWIF wif) hexPrivateKey)
         ]
 
+
 keyConversions : Test
 keyConversions =
     describe "Key conversions"
-        [ it "should get a binary public key from a hex private key"  (Expect.equal (getBinaryPublicKeyFromHexPrivateKey hexPrivateKey True) binaryPublicKey)
-        , it "should get a binary public key from a binary private key"  (Expect.equal (getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey True) binaryPublicKey)
-        , it "should get a hex public key from a binary private key"  (Expect.equal (getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey True) hexPublicKey)
-        , it "should get a hex public key from a hex private key"  (Expect.equal (getHexPublicKeyFromHexPrivateKey hexPrivateKey True) hexPublicKey)
+        [ it "should get a binary public key from a hex private key" (Expect.equal (getBinaryPublicKeyFromHexPrivateKey hexPrivateKey True) binaryPublicKey)
+        , it "should get a binary public key from a binary private key" (Expect.equal (getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey True) binaryPublicKey)
+        , it "should get a hex public key from a binary private key" (Expect.equal (getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey True) hexPublicKey)
+        , it "should get a hex public key from a hex private key" (Expect.equal (getHexPublicKeyFromHexPrivateKey hexPrivateKey True) hexPublicKey)
         ]
+
 
 accounts : Test
 accounts =
@@ -123,7 +125,7 @@ contractData =
             getBinaryPrivateKeyFromWIF "L1QqQJnpBwbsPGAuutuzPTac8piqvbR1HRjrY5qHup48TBCBFe4g"
 
         fromBinaryPublicKey =
-            getBinaryPublicKeyFromBinaryPrivateKey
+            getBinaryPublicKeyFromBinaryPrivateKey fromBinaryPrivateKey True
 
         transactionData =
             expectedTransactionDataGasNotEqual
@@ -131,12 +133,12 @@ contractData =
         signatureData =
             expectedSignatureData
     in
-        getContractData transactionData signatureData fromBinaryPrivateKey
+        getContractData transactionData signatureData fromBinaryPublicKey
 
 
 expectedContractData : ContractData
 expectedContractData =
-    ""
+    "80000005fd7518a67fee8b769a0826ce3df7d2b6d692d0a2bca0e1b258fa6af539f970250000dc21e45b5a80a6bc473dadf560f7d23df7032c8cf79867d400da84700341a73200008be326494a6486e92915fb150d8590d6babb1b9907f9ff80cf48793ac35a299c00006f5b94a7297681258e4e184544d7d0756fd31feab34a957da62d07b8204d4c7000001a84a7e19d56626e0b5bf5494094feb094d4ebeba4cad24a2c385a1b7aa67233000002e72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c602022cb8d0000000035b20010db73bf86371075ddfba4e6596f1ff35de72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c6097957408000000003775292229eccdf904f16fff8e83e7cffdc0f0ce014140919c47584d3153782cffe1a46487680d10afe9ac68cac1c338e4bd202d2b375a95c9658a2c10e303e4057643d04eee2797b64d5957273dd48cc898cdb2bbe1d1232102028a99826edc0c97d18e22b6932373d908d323aa7f92656a77ec26e8861699efac"
 
 
 orderedUnspentTransactions : Transactions
