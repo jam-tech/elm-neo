@@ -26115,7 +26115,6 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         try {
 
             var binaryPublicKey = hexstring2ab(hexPublicKey);
-            console.log(binaryPublicKey)
 
             var encodedPublicKey = getPublicKeyEncoded(hexPublicKey);
 
@@ -26125,8 +26124,6 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
             }
 
             var binaryPrivateKey = _elm_lang$core$Native_List.fromArray([]);
-
-            // var hexPublicKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey));
 
             var publicKeyHash = getHash(hexPublicKey);
 
@@ -26150,6 +26147,235 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
+    var numStoreInMemory = function (num, length) {
+        for (var i = num.length; i < length; i++) {
+            num = '0' + num;
+        }
+        var data = reverseArray(new all_crypto.buffer.Buffer(num, "HEX"));
+        return ab2hexstring(data);
+    };
+
+    var reverseArray = function (arr) {
+        var result = new Uint8Array(arr.length);
+        for (var i = 0; i < arr.length; i++) {
+            result[i] = arr[arr.length - 1 - i];
+        }
+
+        return result;
+    };
+
+    var getInputData = function (coinData, amount) {
+        // sort
+        var coin_ordered = _elm_lang$core$Native_List.toArray(coinData['unspent']);
+
+        for (var i = 0; i < coin_ordered.length - 1; i++) {
+            for (var j = 0; j < coin_ordered.length - 1 - i; j++) {
+                if (parseFloat(coin_ordered[j].value) < parseFloat(coin_ordered[j + 1].value)) {
+                    var temp = coin_ordered[j];
+                    coin_ordered[j] = coin_ordered[j + 1];
+                    coin_ordered[j + 1] = temp;
+                }
+            }
+        }
+
+        // calc sum
+        var sum = 0;
+        for (var i = 0; i < coin_ordered.length; i++) {
+            sum = sum + parseFloat(coin_ordered[i].value);
+        }
+
+        // if sum < amount then exit;
+        var amount = parseFloat(amount);
+        if (sum < amount) return -1;
+
+        // find input coins
+        var k = 0;
+        while (parseFloat(coin_ordered[k].value) <= amount) {
+            amount = amount - parseFloat(coin_ordered[k].value);
+            if (amount === 0) break;
+            k = k + 1;
+        }
+
+        /////////////////////////////////////////////////////////////////////////
+        // coin[0]- coin[k]
+        var data = new Uint8Array(1 + 34 * (k + 1));
+
+        // input num
+        var inputNum = numStoreInMemory((k + 1).toString(16), 2);
+
+        data.set(hexstring2ab(inputNum));
+
+        // input coins
+        for (var x = 0; x < k + 1; x++) {
+
+            // txid
+            var pos = 1 + (x * 34);
+            data.set(reverseArray(hexstring2ab(coin_ordered[x]['transactionId'])), pos);
+
+            // index
+            pos = 1 + (x * 34) + 32;
+            var inputIndex = numStoreInMemory(coin_ordered[x]['index'].toString(16), 4);
+            data.set(hexstring2ab(inputIndex), pos);
+
+        }
+
+        /////////////////////////////////////////////////////////////////////////
+
+        // calc coin_amount
+        var coin_amount = 0;
+        for (var i = 0; i < k + 1; i++) {
+            coin_amount = coin_amount + parseFloat(coin_ordered[i].value);
+        }
+
+        /////////////////////////////////////////////////////////////////////////
+
+        return {
+            amount: coin_amount,
+            data: data
+        }
+    };
+
+
+    var getTransferData = function (coinData, binaryPublicKey, toAddress, amount) {
+        try {
+
+            var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
+
+            var ProgramHash = all_crypto.base58.decode(toAddress);
+            var ProgramHexString = all_crypto.cryptojs.enc.Hex.parse(ab2hexstring(ProgramHash.slice(0, 21)));
+            var ProgramSha256 = all_crypto.cryptojs.SHA256(ProgramHexString);
+            var ProgramSha256_2 = all_crypto.cryptojs.SHA256(ProgramSha256);
+            var ProgramSha256Buffer = hexstring2ab(ProgramSha256_2.toString());
+
+            if (ab2hexstring(ProgramSha256Buffer.slice(0, 4)) !== ab2hexstring(ProgramHash.slice(21, 25))) {
+                //address verify failed.
+                return -1;
+            }
+
+            ProgramHash = ProgramHash.slice(1, 21);
+
+            var signatureScript = createSignatureScript(encodedPublicKey);
+            var myProgramHash = getHash(signatureScript);
+
+            // INPUT CONSTRUCT
+            var inputData = getInputData(coinData, amount);
+            if (inputData === -1) return null;
+
+            var inputLen = inputData.data.length;
+            var inputAmount = inputData.amount;
+
+            // Set SignableData Len
+            var signableDataLen = 124 + inputLen;
+            if (inputAmount === amount) {
+                signableDataLen = 64 + inputLen;
+            }
+
+            // CONSTRUCT
+            var data = new Uint8Array(signableDataLen);
+
+            // type
+            data.set(hexstring2ab("80"), 0);
+
+            // version
+            data.set(hexstring2ab("00"), 1);
+
+            // Attributes
+            data.set(hexstring2ab("00"), 2);
+
+            // INPUT
+            data.set(inputData.data, 3);
+
+            // OUTPUT
+            if (inputAmount === amount) {
+                // only one output
+
+                // output num
+                data.set(hexstring2ab("01"), inputLen + 3);
+
+                ////////////////////////////////////////////////////////////////////
+                // OUTPUT - 0
+
+                // output asset
+                data.set(reverseArray(hexstring2ab(coinData['assetId'])), inputLen + 4);
+
+                // output value
+                const num1 = parseInt(amount * 100000000);
+                const num1str = numStoreInMemory(num1.toString(16), 16);
+                data.set(hexstring2ab(num1str), inputLen + 36);
+
+                // output ProgramHash
+                data.set(ProgramHash, inputLen + 44);
+
+                ////////////////////////////////////////////////////////////////////
+
+            } else {
+
+                // output num
+                data.set(hexstring2ab("02"), inputLen + 3);
+
+
+                ////////////////////////////////////////////////////////////////////
+                // OUTPUT - 0
+
+                // output asset
+                data.set(reverseArray(hexstring2ab(coinData['assetId'])), inputLen + 4);
+
+                // output value
+                const num1 = parseInt(amount * 100000000);
+                const num1str = numStoreInMemory(num1.toString(16), 16);
+                data.set(hexstring2ab(num1str), inputLen + 36);
+
+                // output ProgramHash
+                data.set(ProgramHash, inputLen + 44);
+
+                ////////////////////////////////////////////////////////////////////
+                // OUTPUT - 1
+
+                // output asset
+                data.set(reverseArray(hexstring2ab(coinData['assetId'])), inputLen + 64);
+
+                // output value
+                const num2 = parseInt(inputAmount * 100000000 - num1);
+                const num2str = numStoreInMemory(num2.toString(16), 16);
+                data.set(hexstring2ab(num2str), inputLen + 96);
+
+                // output ProgramHash
+                data.set(hexstring2ab(myProgramHash.toString()), inputLen + 104);
+                ////////////////////////////////////////////////////////////////////
+
+            }
+
+            return ab2hexstring(data);
+
+        } catch (e) {
+            return "something went wrong: " + e;
+        }
+    };
+
+    var getSignatureData = function (transactionData, binaryPrivateKey) {
+        try {
+
+            var msg = all_crypto.cryptojs.enc.Hex.parse(transactionData);
+            var msgHash = all_crypto.cryptojs.SHA256(msg);
+            const msgHashHex = new all_crypto.buffer.Buffer(msgHash.toString(), "hex");
+
+            var elliptic = new all_crypto.elliptic.ec('p256');
+            const sig = elliptic.sign(msgHashHex, _elm_lang$core$Native_List.toArray(binaryPrivateKey), null);
+            const signature = {
+                signature: all_crypto.buffer.Buffer.concat([
+                    sig.r.toArrayLike(all_crypto.buffer.Buffer, 'be', 32),
+                    sig.s.toArrayLike(all_crypto.buffer.Buffer, 'be', 32)
+                ])
+            };
+
+            return signature.signature.toString('hex');
+
+        } catch (e) {
+            return "something went wrong: " + e;
+        }
+    };
+
+
     return {
         generateBinaryPrivateKey       : generateBinaryPrivateKey(),
         generateHexPrivateKey          : generateHexPrivateKey(),
@@ -26160,7 +26386,9 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         getAccountFromBinaryPrivateKey : getAccountFromBinaryPrivateKey,
         getAccountFromHexPrivateKey    : getAccountFromHexPrivateKey,
         getAccountFromBinaryPublicKey  : getAccountFromBinaryPublicKey,
-        getAccountFromHexPublicKey     : getAccountFromHexPublicKey
+        getAccountFromHexPublicKey     : getAccountFromHexPublicKey,
+        getTransferData                : F4(getTransferData),
+        getSignatureData               : F2(getSignatureData)
     }
 
 }());
