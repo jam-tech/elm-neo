@@ -88,14 +88,44 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
-    var getBinaryPublicKeyFromHexPrivateKey = function(hexPrivateKey, shouldEncode){
+    var getBinaryPublicKeyFromHexPrivateKey = function (hexPrivateKey, shouldEncode) {
+        try {
+            var ecparams = all_crypto.ecurve.getCurveByName('secp256r1');
+            var curvePt = ecparams.G.multiply(all_crypto.BigInteger.fromBuffer(hexstring2ab(hexPrivateKey)));
 
-        var ecparams = all_crypto.ecurve.getCurveByName('secp256r1');
-        var curvePt = ecparams.G.multiply(all_crypto.BigInteger.fromBuffer(hexstring2ab(hexPrivateKey)));
-
-        return curvePt.getEncoded(shouldEncode);
+            return _elm_lang$core$Native_List.fromArray(curvePt.getEncoded(shouldEncode));
+        } catch (e) {
+            return "something went wrong: " + e;
+        }
     };
 
+    var getBinaryPublicKeyFromBinaryPrivateKey = function (binaryPrivateKey, shouldEncode) {
+        try {
+            var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
+
+            return getBinaryPublicKeyFromHexPrivateKey(hexPrivateKey, shouldEncode);
+        } catch (e) {
+            return "something went wrong: " + e;
+        }
+    };
+
+    var getHexPublicKeyFromBinaryPrivateKey = function (binaryPrivateKey, shouldEncode) {
+        try {
+            var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
+
+            return ab2hexstring(_elm_lang$core$Native_List.toArray(getBinaryPublicKeyFromHexPrivateKey(hexPrivateKey, shouldEncode)));
+        } catch (e) {
+            return "something went wrong: " + e;
+        }
+    };
+
+    var getHexPublicKeyFromHexPrivateKey = function (hexPrivateKey, shouldEncode) {
+        try {
+            return ab2hexstring(_elm_lang$core$Native_List.toArray(getBinaryPublicKeyFromHexPrivateKey(hexPrivateKey, shouldEncode)));
+        } catch (e) {
+            return "something went wrong: " + e;
+        }
+    };
 
     var getHash = function(item) {
         var ProgramHexString = all_crypto.cryptojs.enc.Hex.parse(item);
@@ -165,11 +195,11 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var binaryPublicKey = getBinaryPublicKeyFromHexPrivateKey(hexPrivateKey, true);
 
-            var hexPublicKey = ab2hexstring(binaryPublicKey);
+            var hexPublicKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey));
 
-            var publicKeyHash = getHash(binaryPublicKey.toString('hex'));
+            var publicKeyHash = getHash(hexPublicKey);
 
-            var script = createSignatureScript(binaryPublicKey);
+            var script = createSignatureScript(hexPublicKey);
 
             var programHash = getHash(script);
 
@@ -178,7 +208,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
             return {
                 binaryPrivateKey: binaryPrivateKey
                 , hexPrivateKey: hexPrivateKey
-                , binaryPublicKey: _elm_lang$core$Native_List.fromArray(binaryPublicKey)
+                , binaryPublicKey: binaryPublicKey
                 , hexPublicKey: hexPublicKey
                 , publicKeyHash: publicKeyHash
                 , programHash: programHash
@@ -498,20 +528,50 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
+    var getContractData = function (transactionData, signatureData, binaryPublicKey) {
+        try {
+
+            var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
+
+            var signatureScript = createSignatureScript(encodedPublicKey);
+            // sign num
+            var data = $txData + "01";
+            // sign struct len
+            data = data + "41";
+            // sign data len
+            data = data + "40";
+            // sign data
+            data = data + $sign;
+            // Contract data len
+            data = data + "23";
+            // script data
+            data = data + signatureScript;
+            console.log("contract data", data);
+            return data;
+
+        } catch (e) {
+            return "something went wrong: " + e;
+        }
+    };
 
     return {
-        generateBinaryPrivateKey       : generateBinaryPrivateKey(),
-        generateHexPrivateKey          : generateHexPrivateKey(),
-        getWIFFromBinaryPrivateKey     : getWIFFromBinaryPrivateKey,
-        getWIFFromHexPrivateKey        : getWIFFromHexPrivateKey,
-        getBinaryPrivateKeyFromWIF     : getBinaryPrivateKeyFromWIF,
-        getHexPrivateKeyFromWIF        : getHexPrivateKeyFromWIF,
-        getAccountFromBinaryPrivateKey : getAccountFromBinaryPrivateKey,
-        getAccountFromHexPrivateKey    : getAccountFromHexPrivateKey,
-        getAccountFromBinaryPublicKey  : getAccountFromBinaryPublicKey,
-        getAccountFromHexPublicKey     : getAccountFromHexPublicKey,
-        getTransferData                : F4(getTransferData),
-        getSignatureData               : F2(getSignatureData)
+        generateBinaryPrivateKey               : generateBinaryPrivateKey(),
+        generateHexPrivateKey                  : generateHexPrivateKey(),
+        getWIFFromBinaryPrivateKey             : getWIFFromBinaryPrivateKey,
+        getWIFFromHexPrivateKey                : getWIFFromHexPrivateKey,
+        getBinaryPrivateKeyFromWIF             : getBinaryPrivateKeyFromWIF,
+        getHexPrivateKeyFromWIF                : getHexPrivateKeyFromWIF,
+        getAccountFromBinaryPrivateKey         : getAccountFromBinaryPrivateKey,
+        getAccountFromHexPrivateKey            : getAccountFromHexPrivateKey,
+        getAccountFromBinaryPublicKey          : getAccountFromBinaryPublicKey,
+        getAccountFromHexPublicKey             : getAccountFromHexPublicKey,
+        getTransferData                        : F4(getTransferData),
+        getSignatureData                       : F2(getSignatureData),
+        getContractData                        : F3(getContractData),
+        getBinaryPublicKeyFromHexPrivateKey    : F2(getBinaryPublicKeyFromHexPrivateKey),
+        getBinaryPublicKeyFromBinaryPrivateKey : F2(getBinaryPublicKeyFromBinaryPrivateKey),
+        getHexPublicKeyFromBinaryPrivateKey    : F2(getHexPublicKeyFromBinaryPrivateKey),
+        getHexPublicKeyFromHexPrivateKey       : F2(getHexPublicKeyFromHexPrivateKey)
     }
 
 }());

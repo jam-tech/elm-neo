@@ -18,6 +18,7 @@ module Neo
         , TransactionId
         , AssetId
         , SignatureData
+        , ContractData
         , generateBinaryPrivateKey
         , generateHexPrivateKey
         , getWIFFromBinaryPrivateKey
@@ -32,6 +33,11 @@ module Neo
         , gasAssetId
         , getTransferData
         , getSignatureData
+        , getContractData
+        , getBinaryPublicKeyFromHexPrivateKey
+        , getBinaryPublicKeyFromBinaryPrivateKey
+        , getHexPublicKeyFromBinaryPrivateKey
+        , getHexPublicKeyFromHexPrivateKey
         )
 
 {-| Elm Neo provides tools for the neo wallet and crypto.
@@ -39,7 +45,7 @@ module Neo
 @docs BinaryPrivateKey, HexPrivateKey, Wif, HexPublicKey, BinaryPublicKey, generateBinaryPrivateKey, generateHexPrivateKey, getWIFFromBinaryPrivateKey, getWIFFromHexPrivateKey, getBinaryPrivateKeyFromWIF,
       PublicKeyHash, ProgramHash, Address, Account, TransactionData, getHexPrivateKeyFromWIF, getAccountFromBinaryPrivateKey, getAccountFromHexPrivateKey, getAccountFromBinaryPublicKey,
       getAccountFromHexPublicKey, Asset, AssetName, CoinData, Transactions, Transaction, TransactionId, neoAssetId, gasAssetId, AssetId, getTransferData,
-      SignatureData, getSignatureData
+      SignatureData, getSignatureData, ContractData, getContractData, getBinaryPublicKeyFromHexPrivateKey,getBinaryPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromHexPrivateKey
 
 -}
 
@@ -133,6 +139,15 @@ providing context to String
 
 -}
 type alias SignatureData =
+    String
+
+
+{-| ContractData
+
+providing context to String
+
+-}
+type alias ContractData =
     String
 
 
@@ -361,3 +376,53 @@ gets signature data
 getSignatureData : TransactionData -> BinaryPrivateKey -> SignatureData
 getSignatureData transactionData binaryPrivateKey =
     Native.Neo.getSignatureData transactionData binaryPrivateKey
+
+
+{-| getContractData
+
+gets contract data
+
+-}
+getContractData : TransactionData -> SignatureData -> BinaryPublicKey -> SignatureData
+getContractData transactionData signatureData binaryPublicKey =
+    Native.Neo.getContractData transactionData signatureData binaryPublicKey
+
+
+{-| getBinaryPublicKeyFromHexPrivateKey
+
+gets a binary public key from a hex private key
+
+-}
+getBinaryPublicKeyFromHexPrivateKey : HexPrivateKey -> Bool -> BinaryPublicKey
+getBinaryPublicKeyFromHexPrivateKey hexPrivateKey shouldEncode =
+    Native.Neo.getBinaryPublicKeyFromHexPrivateKey hexPrivateKey shouldEncode
+
+
+{-| getBinaryPublicKeyFromBinaryPrivateKey
+
+gets a binary public key from a binary private key
+
+-}
+getBinaryPublicKeyFromBinaryPrivateKey : BinaryPrivateKey -> Bool -> BinaryPublicKey
+getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey shouldEncode =
+    Native.Neo.getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey shouldEncode
+
+
+{-| getHexPublicKeyFromBinaryPrivateKey
+
+gets a hex public key from a binary private key
+
+-}
+getHexPublicKeyFromBinaryPrivateKey : BinaryPrivateKey -> Bool -> HexPublicKey
+getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey shouldEncode =
+    Native.Neo.getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey shouldEncode
+
+
+{-| getHexPublicKeyFromHexPrivateKey
+
+gets a hex public key from a hex private key
+
+-}
+getHexPublicKeyFromHexPrivateKey : HexPrivateKey -> Bool -> HexPublicKey
+getHexPublicKeyFromHexPrivateKey hexPrivateKey shouldEncode =
+    Native.Neo.getHexPublicKeyFromHexPrivateKey hexPrivateKey shouldEncode

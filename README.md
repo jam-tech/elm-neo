@@ -10,10 +10,10 @@ This project provides elm tools for the Neo blockchain
 There are 5 areas:
 
 * Private and public keys
-* accounts
-* transactions
-* signatures
-* contract data
+* Accounts
+* Transactions
+* Signatures
+* Contracts
 
 ### Private and public keys
 
@@ -31,6 +31,14 @@ Neo.getWIFFromHexPrivateKey
 -- getting a private key from a wif
 Neo.getBinaryPrivateKeyFromWIF
 Neo.getHexPrivateKeyFromWIF
+
+-- get binary public key
+Neo.getBinaryPublicKeyFromHexPrivateKey hexPrivateKey True
+Neo.getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey True
+
+-- get hex public key
+Neo.getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey True
+Neo.getHexPublicKeyFromHexPrivateKey hexPrivateKey True
 ```
 
 ### Accounts

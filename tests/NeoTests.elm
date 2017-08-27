@@ -14,6 +14,8 @@ main =
     , accounts
     , transactions
     , signatures
+--    , contracts
+    , keyConversions
     ]
         |> concat
         |> Test.Runner.Html.run
@@ -30,6 +32,14 @@ privateAndPublicKeys =
         , it "should get a hex private key from a wif" (Expect.equal (getHexPrivateKeyFromWIF wif) hexPrivateKey)
         ]
 
+keyConversions : Test
+keyConversions =
+    describe "Key conversions"
+        [ it "should get a binary public key from a hex private key"  (Expect.equal (getBinaryPublicKeyFromHexPrivateKey hexPrivateKey True) binaryPublicKey)
+        , it "should get a binary public key from a binary private key"  (Expect.equal (getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey True) binaryPublicKey)
+        , it "should get a hex public key from a binary private key"  (Expect.equal (getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey True) hexPublicKey)
+        , it "should get a hex public key from a hex private key"  (Expect.equal (getHexPublicKeyFromHexPrivateKey hexPrivateKey True) hexPublicKey)
+        ]
 
 accounts : Test
 accounts =
@@ -55,6 +65,12 @@ signatures : Test
 signatures =
     describe "Signature Data"
         [ it "should return signature data" (Expect.equal signatureData expectedSignatureData) ]
+
+
+contracts : Test
+contracts =
+    describe "Contract Data"
+        [ it "should return contract data" (Expect.equal contractData expectedContractData) ]
 
 
 getUnspentAmount : Float
@@ -98,6 +114,29 @@ signatureData =
 expectedSignatureData : SignatureData
 expectedSignatureData =
     "919c47584d3153782cffe1a46487680d10afe9ac68cac1c338e4bd202d2b375a95c9658a2c10e303e4057643d04eee2797b64d5957273dd48cc898cdb2bbe1d1"
+
+
+contractData : ContractData
+contractData =
+    let
+        fromBinaryPrivateKey =
+            getBinaryPrivateKeyFromWIF "L1QqQJnpBwbsPGAuutuzPTac8piqvbR1HRjrY5qHup48TBCBFe4g"
+
+        fromBinaryPublicKey =
+            getBinaryPublicKeyFromBinaryPrivateKey
+
+        transactionData =
+            expectedTransactionDataGasNotEqual
+
+        signatureData =
+            expectedSignatureData
+    in
+        getContractData transactionData signatureData fromBinaryPrivateKey
+
+
+expectedContractData : ContractData
+expectedContractData =
+    ""
 
 
 orderedUnspentTransactions : Transactions
