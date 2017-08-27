@@ -1,6 +1,5 @@
 # Elm Neo
 
-[![Build Status](https://travis-ci.org/kingsleyh/elm-neo.svg?branch=master)](https://travis-ci.org/kingsleyh/elm-neo)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 This project provides elm tools for the Neo blockchain
@@ -180,3 +179,25 @@ Then run elm-install
 
 See the [tests](https://github.com/kingsleyh/elm-neo/blob/master/tests/NeoTests.elm) for example usage
 
+## Testing
+
+There are tests in the tests folder which run in the browser - this is because the native code doesn't want to run in elm-test so running in the browser was the only way I could get the tests running.
+However this means that they can't be hooked up to travis-ci - maybe I'll be able to resolve this in the future - but for now to see the tests
+
+```
+cd tests
+elm-reactor 
+```
+
+Then fire up the browser on localhost:8000 and visit the NeoTest.elm
+
+## Dev
+
+In the JS folder is a native.js with all the native code in it. There is a main.js with exports that are used in the native.js.
+These two files must be concatenated and output to Native/Neo.js - this is what gen.sh does. So after making changes to either main.js or native.js make sure to run
+gen.sh to see the changes. Fire up the tests as described above during dev to keep on the straight and narrow.
+
+So this all works by using browserify to package up all the required node_modules into a single js with standalone exports as all_crypto. To access the packaged libs from the 
+native.js you just prepend it with all_crypto.<name of export in main.js>.<lib>
+
+so you'll have to yarn install in the JS folder to get all the deps
