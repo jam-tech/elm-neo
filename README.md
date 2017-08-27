@@ -198,6 +198,6 @@ These two files must be concatenated and output to Native/Neo.js - this is what 
 gen.sh to see the changes. Fire up the tests as described above during dev to keep on the straight and narrow.
 
 So this all works by using browserify to package up all the required node_modules into a single js with standalone exports as all_crypto. To access the packaged libs from the 
-native.js you just prepend it with all_crypto.<name of export in main.js>.<lib>
+native.js you just prepend it with all_crypto.*name of export in main.js*.*lib*
 
 so you'll have to yarn install in the JS folder to get all the deps
