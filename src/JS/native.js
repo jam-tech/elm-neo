@@ -25,29 +25,13 @@ var hexstring2ab = function (str) {
 
 var _kingsleyh$elm_neo$Native_Neo = (function () {
 
-    var generateBinaryPrivateKey = function () {
-        try {
-            return _elm_lang$core$Native_List.fromArray(all_crypto.secureRandom.randomUint8Array(32));
-        } catch (e) {
-            return "something went wrong: " + e;
-        }
-    };
-
-    var generateBinaryPrivateKey2 = _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
+    var generateBinaryPrivateKey = _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
         callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_List.fromArray(all_crypto.secureRandom.randomUint8Array(32))));
     });
 
-    var generateHexPrivateKey2 = _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
-            callback(_elm_lang$core$Native_Scheduler.succeed(ab2hexstring(all_crypto.secureRandom.randomUint8Array(32))));
+    var generateHexPrivateKey = _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
+        callback(_elm_lang$core$Native_Scheduler.succeed(ab2hexstring(all_crypto.secureRandom.randomUint8Array(32))));
     });
-
-    var generateHexPrivateKey = function () {
-        try {
-            return ab2hexstring(all_crypto.secureRandom.randomUint8Array(32));
-        } catch (e) {
-            return "something went wrong: " + e;
-        }
-    };
 
     var getWIFFromBinaryPrivateKey = function (binaryPrivateKey) {
         try {
@@ -567,9 +551,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
     return {
         generateBinaryPrivateKey               : generateBinaryPrivateKey(),
-        generateBinaryPrivateKey2               : generateBinaryPrivateKey2,
         generateHexPrivateKey                  : generateHexPrivateKey(),
-        generateHexPrivateKey2                  : generateHexPrivateKey2,
         getWIFFromBinaryPrivateKey             : getWIFFromBinaryPrivateKey,
         getWIFFromHexPrivateKey                : getWIFFromHexPrivateKey,
         getBinaryPrivateKeyFromWIF             : getBinaryPrivateKeyFromWIF,
