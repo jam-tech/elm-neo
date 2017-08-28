@@ -24,9 +24,10 @@ main =
 privateAndPublicKeys : Test
 privateAndPublicKeys =
     describe "Private and public keys"
-        [ it "should generate a hex private key" (Expect.equal (String.length generateHexPrivateKey) 64)
-        , it "should generate a binary private key" (Expect.equal (List.length generateBinaryPrivateKey) 32)
-        , it "should get a wif from the binary private key" (Expect.equal (getWIFFromBinaryPrivateKey binaryPrivateKey) "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU")
+        [
+--        it "should generate a hex private key" (Expect.equal (String.length generateHexPrivateKey) 64)
+--        , it "should generate a binary private key" (Expect.equal (List.length generateBinaryPrivateKey) 32)
+          it "should get a wif from the binary private key" (Expect.equal (getWIFFromBinaryPrivateKey binaryPrivateKey) "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU")
         , it "should get a wif from the hex private key" (Expect.equal (getWIFFromHexPrivateKey hexPrivateKey) "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU")
         , it "should get a binary private key from a wif" (Expect.equal (getBinaryPrivateKeyFromWIF wif) binaryPrivateKey)
         , it "should get a hex private key from a wif" (Expect.equal (getHexPrivateKeyFromWIF wif) hexPrivateKey)
