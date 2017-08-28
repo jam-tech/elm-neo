@@ -325,7 +325,7 @@ getHexPrivateKeyFromWIF wif =
 gets wallet info from a binary private key
 
 -}
-getAccountFromBinaryPrivateKey : BinaryPrivateKey -> Account
+getAccountFromBinaryPrivateKey : BinaryPrivateKey -> Result String Account
 getAccountFromBinaryPrivateKey binaryPrivateKey =
     Native.Neo.getAccountFromBinaryPrivateKey binaryPrivateKey
 
@@ -335,7 +335,7 @@ getAccountFromBinaryPrivateKey binaryPrivateKey =
 gets wallet info from a binary private key
 
 -}
-getAccountFromHexPrivateKey : HexPrivateKey -> Account
+getAccountFromHexPrivateKey : HexPrivateKey -> Result String Account
 getAccountFromHexPrivateKey hexPrivateKey =
     Native.Neo.getAccountFromHexPrivateKey hexPrivateKey
 
@@ -345,7 +345,7 @@ getAccountFromHexPrivateKey hexPrivateKey =
 gets wallet info from a binary public key
 
 -}
-getAccountFromBinaryPublicKey : BinaryPublicKey -> Account
+getAccountFromBinaryPublicKey : BinaryPublicKey -> Result String Account
 getAccountFromBinaryPublicKey binaryPublicKey =
     Native.Neo.getAccountFromBinaryPublicKey binaryPublicKey
 
@@ -355,7 +355,7 @@ getAccountFromBinaryPublicKey binaryPublicKey =
 gets wallet info from a hex public key
 
 -}
-getAccountFromHexPublicKey : HexPublicKey -> Account
+getAccountFromHexPublicKey : HexPublicKey -> Result String Account
 getAccountFromHexPublicKey hexPublicKey =
     Native.Neo.getAccountFromHexPublicKey hexPublicKey
 

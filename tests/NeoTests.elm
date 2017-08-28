@@ -24,9 +24,8 @@ main =
 privateAndPublicKeys : Test
 privateAndPublicKeys =
     describe "Private and public keys"
-        [
---        it "should generate a hex private key" (Expect.equal (String.length generateHexPrivateKey) 64)
---        , it "should generate a binary private key" (Expect.equal (List.length generateBinaryPrivateKey) 32)
+        [ --        it "should generate a hex private key" (Expect.equal (String.length generateHexPrivateKey) 64)
+          --        , it "should generate a binary private key" (Expect.equal (List.length generateBinaryPrivateKey) 32)
           it "should get a wif from the binary private key" (Expect.equal (getWIFFromBinaryPrivateKey binaryPrivateKey) "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU")
         , it "should get a wif from the hex private key" (Expect.equal (getWIFFromHexPrivateKey hexPrivateKey) "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU")
         , it "should get a binary private key from a wif" (Expect.equal (getBinaryPrivateKeyFromWIF wif) binaryPrivateKey)
@@ -47,11 +46,35 @@ keyConversions =
 accounts : Test
 accounts =
     describe "Wallet account info"
-        [ it "should return an account given a binary private key" (Expect.equal (getAccountFromBinaryPrivateKey binaryPrivateKey) account)
-        , it "should return an account given a hex private key" (Expect.equal (getAccountFromHexPrivateKey hexPrivateKey) account)
-        , it "should return an account given a binary public key" (Expect.equal (getAccountFromBinaryPublicKey binaryPublicKey) publicAccount)
-        , it "should return an account given a hex public key" (Expect.equal (getAccountFromHexPublicKey hexPublicKey) publicAccount)
+        [ it "should return an account given a binary private key" (returnsExpectedAccount account (getAccountFromBinaryPrivateKey binaryPrivateKey))
+        , it "should return an error given an invalid binary private key" (failsExpectedAccount "Error could not get account information from the supplied BinaryPrivateKey: 1,2,3 because it is not a valid BinaryPrivateKey" (getAccountFromBinaryPrivateKey [ 1, 2, 3 ]))
+        , it "should return an account given a hex private key" (returnsExpectedAccount account (getAccountFromHexPrivateKey hexPrivateKey))
+        , it "should return an error given an invalid hex private key" (failsExpectedAccount "Error could not get account information from the supplied HexPrivateKey: not-a-hex-private-key because it is not a valid HexPrivateKey" (getAccountFromHexPrivateKey "not-a-hex-private-key"))
+        , it "should return an account given a binary public key" (returnsExpectedAccount publicAccount (getAccountFromBinaryPublicKey binaryPublicKey))
+        , it "should return an error given an invalid binary public key" (failsExpectedAccount "Error could not get account information from the supplied BinaryPublicKey: 1,2,3 because it is not a valid BinaryPublicKey" (getAccountFromBinaryPublicKey [ 1, 2, 3 ]))
+        , it "should return an account given a hex public key" (returnsExpectedAccount publicAccount (getAccountFromHexPublicKey hexPublicKey))
+        , it "should return an error given an invalid hex public key" (failsExpectedAccount "Error could not get account information from the supplied HexPublicKey: not-a-hex-public-key because it is not a valid HexPublicKey" (getAccountFromHexPublicKey "not-a-hex-public-key"))
         ]
+
+
+returnsExpectedAccount : Account -> Result String Account -> Expectation
+returnsExpectedAccount expectedAccount maybeAccount =
+    case maybeAccount of
+        Ok account ->
+            Expect.equal account expectedAccount
+
+        Err error ->
+            Expect.fail error
+
+
+failsExpectedAccount : String -> Result String Account -> Expectation
+failsExpectedAccount expectedError maybeAccount =
+    case maybeAccount of
+        Ok account ->
+            Expect.fail "Should not have returned an account"
+
+        Err error ->
+            Expect.equal error expectedError
 
 
 transactions : Test
@@ -88,7 +111,7 @@ transactionTransferData assetName assetId amount =
             getHexPrivateKeyFromWIF "L1QqQJnpBwbsPGAuutuzPTac8piqvbR1HRjrY5qHup48TBCBFe4g"
 
         fromAccount =
-            getAccountFromHexPrivateKey (fromHexPrivateKey)
+            Result.withDefault emptyAccount (getAccountFromHexPrivateKey fromHexPrivateKey)
 
         toAddress =
             "ALfnhLg7rUyL6Jr98bzzoxz5J7m64fbR4s"
@@ -218,4 +241,16 @@ publicAccount =
     , publicKeyHash = "6375ccb1d4b858877b3aa73529774041d7173fc3"
     , programHash = "8d7e6a027f7586747da6f5f3b820135360472256"
     , address = "AUg2MxB9uLfFSGy1EpMiGR75KFAmhUjAH4"
+    }
+
+
+emptyAccount : Account
+emptyAccount =
+    { binaryPrivateKey = []
+    , hexPrivateKey = ""
+    , binaryPublicKey = []
+    , hexPublicKey = ""
+    , publicKeyHash = ""
+    , programHash = ""
+    , address = ""
     }

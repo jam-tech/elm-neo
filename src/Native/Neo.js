@@ -26049,10 +26049,15 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         try {
 
             var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
+
+            if (hexPrivateKey.length !== 64) {
+                return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " because it is not a valid BinaryPrivateKey");
+            }
+
             return getAccountFromHexPrivateKey(hexPrivateKey);
 
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
@@ -26060,7 +26065,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         try {
 
             if (hexPrivateKey.length !== 64) {
-                return -1;
+                return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPrivateKey: " + hexPrivateKey + " because it is not a valid HexPrivateKey");
             }
 
             var binaryPrivateKey = _elm_lang$core$Native_List.fromArray(hexstring2ab(hexPrivateKey));
@@ -26077,7 +26082,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var address = toAddress(hexstring2ab(programHash.toString()));
 
-            return {
+            return _elm_lang$core$Result$Ok({
                 binaryPrivateKey: binaryPrivateKey
                 , hexPrivateKey: hexPrivateKey
                 , binaryPublicKey: binaryPublicKey
@@ -26085,9 +26090,9 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
                 , publicKeyHash: publicKeyHash
                 , programHash: programHash
                 , address: address
-            };
+            });
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
@@ -26106,8 +26111,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
             var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
 
             if (!verifyPublicKeyEncoded(encodedPublicKey)) {
-                // verify failed.
-                return -1
+                return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " because it is not a valid BinaryPublicKey");
             }
 
             var binaryPrivateKey = _elm_lang$core$Native_List.fromArray([]);
@@ -26122,7 +26126,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var address = toAddress(hexstring2ab(programHash.toString()));
 
-            return {
+            return _elm_lang$core$Result$Ok({
                 binaryPrivateKey: binaryPrivateKey
                 , hexPrivateKey: ""
                 , binaryPublicKey: binaryPublicKey
@@ -26130,9 +26134,9 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
                 , publicKeyHash: publicKeyHash
                 , programHash: programHash
                 , address: address
-            };
+            });
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " because it is not a valid BinaryPublicKey");
         }
     };
 
@@ -26144,8 +26148,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
             var encodedPublicKey = getPublicKeyEncoded(hexPublicKey);
 
             if (!verifyPublicKeyEncoded(encodedPublicKey)) {
-                // verify failed.
-                return -1
+                return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPublicKey: " + hexPublicKey + " because it is not a valid HexPublicKey");
             }
 
             var binaryPrivateKey = _elm_lang$core$Native_List.fromArray([]);
@@ -26158,7 +26161,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var address = toAddress(hexstring2ab(programHash.toString()));
 
-            return {
+            return _elm_lang$core$Result$Ok({
                 binaryPrivateKey: binaryPrivateKey
                 , hexPrivateKey: ""
                 , binaryPublicKey: _elm_lang$core$Native_List.fromArray(binaryPublicKey)
@@ -26166,9 +26169,9 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
                 , publicKeyHash: publicKeyHash
                 , programHash: programHash
                 , address: address
-            };
+            });
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPublicKey: " + hexPublicKey + " because it is not a valid HexPublicKey");
         }
     };
 
