@@ -25910,17 +25910,13 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
-    function generateBinaryPrivateKey2() {
-        return _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
-            callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_List.fromArray(all_crypto.secureRandom.randomUint8Array(32))));
-        });
-    }
+    var generateBinaryPrivateKey2 = _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
+        callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_List.fromArray(all_crypto.secureRandom.randomUint8Array(32))));
+    });
 
-    var generateHexPrivateKey2 = function() {
-        return _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
+    var generateHexPrivateKey2 = _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
             callback(_elm_lang$core$Native_Scheduler.succeed(ab2hexstring(all_crypto.secureRandom.randomUint8Array(32))));
-        });
-    };
+    });
 
     var generateHexPrivateKey = function () {
         try {

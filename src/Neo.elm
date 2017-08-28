@@ -20,9 +20,7 @@ module Neo
         , SignatureData
         , ContractData
         , generateBinaryPrivateKey
-        , generateBinaryPrivateKey2
         , generateHexPrivateKey
-        , generateHexPrivateKey2
         , getWIFFromBinaryPrivateKey
         , getWIFFromHexPrivateKey
         , getBinaryPrivateKeyFromWIF
@@ -47,8 +45,8 @@ module Neo
 @docs BinaryPrivateKey, HexPrivateKey, Wif, HexPublicKey, BinaryPublicKey, generateBinaryPrivateKey, generateHexPrivateKey, getWIFFromBinaryPrivateKey, getWIFFromHexPrivateKey, getBinaryPrivateKeyFromWIF,
       PublicKeyHash, ProgramHash, Address, Account, TransactionData, getHexPrivateKeyFromWIF, getAccountFromBinaryPrivateKey, getAccountFromHexPrivateKey, getAccountFromBinaryPublicKey,
       getAccountFromHexPublicKey, Asset, AssetName, CoinData, Transactions, Transaction, TransactionId, neoAssetId, gasAssetId, AssetId, getTransferData,
-      SignatureData, getSignatureData, ContractData, getContractData, getBinaryPublicKeyFromHexPrivateKey,getBinaryPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromHexPrivateKey,
-      generateBinaryPrivateKey2, generateHexPrivateKey2
+      SignatureData, getSignatureData, ContractData, getContractData, getBinaryPublicKeyFromHexPrivateKey,getBinaryPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromHexPrivateKey
+
 
 -}
 
@@ -267,36 +265,17 @@ type alias Account =
 uses secure-random to generate a private key
 
 -}
-generateBinaryPrivateKey : BinaryPrivateKey
+generateBinaryPrivateKey : Task x BinaryPrivateKey
 generateBinaryPrivateKey =
     Native.Neo.generateBinaryPrivateKey
 
-
-{-| generateBinaryPrivateKey2
-
-uses secure-random to generate a private key
-
--}
-generateBinaryPrivateKey2 : Task x BinaryPrivateKey
-generateBinaryPrivateKey2 =
-    Native.Neo.generateBinaryPrivateKey2
-
-
-{-| generateHexPrivateKey2
-
-uses secure-random to generate a private key
-
--}
-generateHexPrivateKey2 : Task x HexPrivateKey
-generateHexPrivateKey2 =
-    Native.Neo.generateHexPrivateKey2
 
 {-| generateHexPrivateKey
 
 uses secure-random to generate a private key
 
 -}
-generateHexPrivateKey : HexPrivateKey
+generateHexPrivateKey : Task x HexPrivateKey
 generateHexPrivateKey =
     Native.Neo.generateHexPrivateKey
 
