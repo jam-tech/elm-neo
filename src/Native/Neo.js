@@ -25907,6 +25907,18 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
+    function generateBinaryPrivateKey2() {
+        return _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
+            callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_List.fromArray(all_crypto.secureRandom.randomUint8Array(32))));
+        });
+    }
+
+    function generateHexPrivateKey2() {
+        return _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
+            callback(_elm_lang$core$Native_Scheduler.succeed(ab2hexstring(all_crypto.secureRandom.randomUint8Array(32))));
+        });
+    }
+
     var generateHexPrivateKey = function () {
         try {
             return ab2hexstring(all_crypto.secureRandom.randomUint8Array(32));
@@ -26433,7 +26445,9 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
     return {
         generateBinaryPrivateKey               : generateBinaryPrivateKey(),
+        generateBinaryPrivateKey2               : generateBinaryPrivateKey2,
         generateHexPrivateKey                  : generateHexPrivateKey(),
+        generateHexPrivateKey2                  : generateHexPrivateKey2,
         getWIFFromBinaryPrivateKey             : getWIFFromBinaryPrivateKey,
         getWIFFromHexPrivateKey                : getWIFFromHexPrivateKey,
         getBinaryPrivateKeyFromWIF             : getBinaryPrivateKeyFromWIF,
