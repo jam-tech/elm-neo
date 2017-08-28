@@ -550,8 +550,8 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     };
 
     return {
-        generateBinaryPrivateKey               : generateBinaryPrivateKey(),
-        generateHexPrivateKey                  : generateHexPrivateKey(),
+        generateBinaryPrivateKey               : generateBinaryPrivateKey,
+        generateHexPrivateKey                  : generateHexPrivateKey,
         getWIFFromBinaryPrivateKey             : getWIFFromBinaryPrivateKey,
         getWIFFromHexPrivateKey                : getWIFFromHexPrivateKey,
         getBinaryPrivateKeyFromWIF             : getBinaryPrivateKeyFromWIF,
