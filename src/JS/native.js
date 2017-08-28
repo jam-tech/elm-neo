@@ -1,3 +1,6 @@
+
+//import Native.Scheduler //
+
 var ab2hexstring = function (arr) {
     var result = "";
     for (var i = 0; i < arr.length; i++) {
@@ -36,11 +39,11 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         });
     }
 
-    function generateHexPrivateKey2() {
+    var generateHexPrivateKey2 = function() {
         return _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
             callback(_elm_lang$core$Native_Scheduler.succeed(ab2hexstring(all_crypto.secureRandom.randomUint8Array(32))));
         });
-    }
+    };
 
     var generateHexPrivateKey = function () {
         try {

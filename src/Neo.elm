@@ -277,7 +277,7 @@ generateBinaryPrivateKey =
 uses secure-random to generate a private key
 
 -}
-generateBinaryPrivateKey2 : Task x (BinaryPrivateKey)
+generateBinaryPrivateKey2 : Task x BinaryPrivateKey
 generateBinaryPrivateKey2 =
     Native.Neo.generateBinaryPrivateKey2
 
@@ -287,7 +287,7 @@ generateBinaryPrivateKey2 =
 uses secure-random to generate a private key
 
 -}
-generateHexPrivateKey2 : Task x (HexPrivateKey)
+generateHexPrivateKey2 : Task x HexPrivateKey
 generateHexPrivateKey2 =
     Native.Neo.generateHexPrivateKey2
 
