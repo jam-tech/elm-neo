@@ -365,7 +365,7 @@ getAccountFromHexPublicKey hexPublicKey =
 gets transaction transfer data
 
 -}
-getTransferData : CoinData -> BinaryPublicKey -> Address -> Float -> TransactionData
+getTransferData : CoinData -> BinaryPublicKey -> Address -> Float -> Result String TransactionData
 getTransferData coinData binaryPublicKey toAddress value =
     Native.Neo.getTransferData coinData binaryPublicKey toAddress value
 
@@ -375,7 +375,7 @@ getTransferData coinData binaryPublicKey toAddress value =
 gets signature data
 
 -}
-getSignatureData : TransactionData -> BinaryPrivateKey -> SignatureData
+getSignatureData : TransactionData -> BinaryPrivateKey -> Result String SignatureData
 getSignatureData transactionData binaryPrivateKey =
     Native.Neo.getSignatureData transactionData binaryPrivateKey
 
@@ -385,7 +385,7 @@ getSignatureData transactionData binaryPrivateKey =
 gets contract data
 
 -}
-getContractData : TransactionData -> SignatureData -> BinaryPublicKey -> SignatureData
+getContractData : TransactionData -> SignatureData -> BinaryPublicKey -> Result String ContractData
 getContractData transactionData signatureData binaryPublicKey =
     Native.Neo.getContractData transactionData signatureData binaryPublicKey
 

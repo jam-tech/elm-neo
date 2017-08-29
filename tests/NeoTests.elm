@@ -61,9 +61,13 @@ keyConversions : Test
 keyConversions =
     describe "Key conversions"
         [ it "should get a binary public key from a hex private key" (returnsExpectedKey binaryPublicKey (getBinaryPublicKeyFromHexPrivateKey hexPrivateKey True))
---        , it "should get a binary public key from a binary private key" (Expect.equal (getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey True) binaryPublicKey)
---        , it "should get a hex public key from a binary private key" (Expect.equal (getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey True) hexPublicKey)
---        , it "should get a hex public key from a hex private key" (Expect.equal (getHexPublicKeyFromHexPrivateKey hexPrivateKey True) hexPublicKey)
+        , it "should return an error given an invalid hex private key" (failsExpectedKey "Error the supplied HexPrivateKey: not-a-valid-hex-private-key is not a valid HexPrivateKey" (getBinaryPublicKeyFromHexPrivateKey "not-a-valid-hex-private-key" True))
+        , it "should get a binary public key from a binary private key (getBinaryPublicKeyFromBinaryPrivateKey)" (returnsExpectedKey binaryPublicKey (getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey True))
+        , it "should return an error given an invalid binary private key (getBinaryPublicKeyFromBinaryPrivateKey)" (failsExpectedKey "Error the supplied BinaryPrivateKey: 1,2,3 is not a valid BinaryPrivateKey" (getBinaryPublicKeyFromBinaryPrivateKey [ 1, 2, 3 ] True))
+        , it "should get a hex public key from a binary private key" (returnsExpectedKey hexPublicKey (getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey True))
+        , it "should return an error given an invalid binary private key (getHexPublicKeyFromBinaryPrivateKey)" (failsExpectedKey "Error the supplied BinaryPrivateKey: 1,2,3 is not a valid BinaryPrivateKey" (getHexPublicKeyFromBinaryPrivateKey [ 1, 2, 3 ] True))
+        , it "should get a hex public key from a hex private key" (returnsExpectedKey hexPublicKey (getHexPublicKeyFromHexPrivateKey hexPrivateKey True))
+        , it "should return an error given an invalid hex private key (getHexPublicKeyFromHexPrivateKey)" (failsExpectedKey "Error the supplied HexPrivateKey: not-a-valid-hex-private-key is not a valid HexPrivateKey" (getHexPublicKeyFromHexPrivateKey "not-a-valid-hex-private-key" True))
         ]
 
 
@@ -104,23 +108,89 @@ failsExpectedAccount expectedError maybeAccount =
 transactions : Test
 transactions =
     describe "Transactions"
-        [ it "can create transfer data for GAS when amounts are not equal" (Expect.equal (transactionTransferData "Gas" gasAssetId 23.789) expectedTransactionDataGasNotEqual)
-        , it "can create transfer data for GAS when amounts are equal" (Expect.equal (transactionTransferData "Gas" gasAssetId getUnspentAmount) expectedTransactionDataGasEqual)
-        , it "can create transfer data for NEO when amounts are not equal" (Expect.equal (transactionTransferData "Neo" neoAssetId 23.789) expectedTransactionDataNeoNotEqual)
-        , it "can create transfer data for NEO when amounts are equal" (Expect.equal (transactionTransferData "Neo" neoAssetId getUnspentAmount) expectedTransactionDataNeoEqual)
+        [ it "can create transfer data for GAS when amounts are not equal" (returnsExpectedTransactionData expectedTransactionDataGasNotEqual (transactionTransferData "Gas" gasAssetId 23.789))
+        , it "can create transfer data for GAS when amounts are equal" (returnsExpectedTransactionData expectedTransactionDataGasEqual (transactionTransferData "Gas" gasAssetId getUnspentAmount))
+        , it "can create transfer data for NEO when amounts are not equal" (returnsExpectedTransactionData expectedTransactionDataNeoNotEqual (transactionTransferData "Neo" neoAssetId 23.789))
+        , it "can create transfer data for NEO when amounts are equal" (returnsExpectedTransactionData expectedTransactionDataNeoEqual (transactionTransferData "Neo" neoAssetId getUnspentAmount))
+        , it "should return an error on invalid binary public key" (failsExpectedTransactionData "Error the supplied BinaryPublicKey: 1,2,3 is not a valid BinaryPublicKey" (getTransferData (CoinData neoAssetId orderedUnspentTransactions getUnspentAmount "Neo") [ 1, 2, 3 ] "ALfnhLg7rUyL6Jr98bzzoxz5J7m64fbR4s" 23.789))
+        , it "should return an error on invalid address" (failsExpectedTransactionData "Error the supplied Address: not-a-valid-address is not a valid NEO Address" (getTransferData (CoinData neoAssetId orderedUnspentTransactions getUnspentAmount "Neo") binaryPublicKey "not-a-valid-address" 23.789))
         ]
+
+
+returnsExpectedTransactionData : TransactionData -> Result String TransactionData -> Expectation
+returnsExpectedTransactionData expectedData maybeData =
+    case maybeData of
+        Ok data ->
+            Expect.equal data expectedData
+
+        Err error ->
+            Expect.fail error
+
+
+failsExpectedTransactionData : String -> Result String TransactionData -> Expectation
+failsExpectedTransactionData expectedError maybeData =
+    case maybeData of
+        Ok data ->
+            Expect.fail "Should not have returned transaction data"
+
+        Err error ->
+            Expect.equal error expectedError
 
 
 signatures : Test
 signatures =
     describe "Signature Data"
-        [ it "should return signature data" (Expect.equal signatureData expectedSignatureData) ]
+        [ it "should return signature data" (returnsExpectedSignatureData expectedSignatureData signatureData)
+        , it "should return an error given an invalid private binary key" (failsExpectedSignatureData "Error the supplied BinaryPrivateKey: 1,2,3 is not a valid BinaryPrivateKey" (getSignatureData "transactionData" [ 1, 2, 3 ]))
+        ]
+
+
+returnsExpectedSignatureData : SignatureData -> Result String SignatureData -> Expectation
+returnsExpectedSignatureData expectedData maybeData =
+    case maybeData of
+        Ok data ->
+            Expect.equal data expectedData
+
+        Err error ->
+            Expect.fail error
+
+
+failsExpectedSignatureData : String -> Result String SignatureData -> Expectation
+failsExpectedSignatureData expectedError maybeData =
+    case maybeData of
+        Ok data ->
+            Expect.fail "Should not have returned signature data"
+
+        Err error ->
+            Expect.equal error expectedError
 
 
 contracts : Test
 contracts =
     describe "Contract Data"
-        [ it "should return contract data" (Expect.equal contractData expectedContractData) ]
+        [ it "should return contract data" (returnsExpectedContractData expectedContractData contractData)
+        , it "should return an error given an invalid binary public key " (failsExpectedContractData "Error the supplied BinaryPublicKey: 1,2,3 is not a valid BinaryPublicKey" (getContractData "transaction-data" "signature-data" [ 1, 2, 3 ]))
+        ]
+
+
+returnsExpectedContractData : ContractData -> Result String ContractData -> Expectation
+returnsExpectedContractData expectedData maybeData =
+    case maybeData of
+        Ok data ->
+            Expect.equal data expectedData
+
+        Err error ->
+            Expect.fail error
+
+
+failsExpectedContractData : String -> Result String ContractData -> Expectation
+failsExpectedContractData expectedError maybeData =
+    case maybeData of
+        Ok data ->
+            Expect.fail "Should not have returned contract data"
+
+        Err error ->
+            Expect.equal error expectedError
 
 
 getUnspentAmount : Float
@@ -128,7 +198,7 @@ getUnspentAmount =
     List.sum <| List.map .value orderedUnspentTransactions
 
 
-transactionTransferData : AssetName -> AssetId -> Float -> TransactionData
+transactionTransferData : AssetName -> AssetId -> Float -> Result String TransactionData
 transactionTransferData assetName assetId amount =
     let
         fromHexPrivateKey =
@@ -149,7 +219,7 @@ transactionTransferData assetName assetId amount =
         getTransferData coinData fromAccount.binaryPublicKey toAddress amount
 
 
-signatureData : SignatureData
+signatureData : Result String SignatureData
 signatureData =
     let
         fromBinaryPrivateKey =
@@ -166,7 +236,7 @@ expectedSignatureData =
     "919c47584d3153782cffe1a46487680d10afe9ac68cac1c338e4bd202d2b375a95c9658a2c10e303e4057643d04eee2797b64d5957273dd48cc898cdb2bbe1d1"
 
 
-contractData : ContractData
+contractData : Result String ContractData
 contractData =
     let
         fromBinaryPrivateKey =

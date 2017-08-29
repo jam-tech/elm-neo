@@ -26017,7 +26017,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     var getBinaryPublicKeyFromHexPrivateKey = function (hexPrivateKey, shouldEncode) {
         try {
             if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
-                return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPrivateKey: " + hexPrivateKey + " because it is not a valid HexPrivateKey");
+                return _elm_lang$core$Result$Err("Error the supplied HexPrivateKey: " + hexPrivateKey + " is not a valid HexPrivateKey");
             }
 
             var ecparams = all_crypto.ecurve.getCurveByName('secp256r1');
@@ -26127,6 +26127,30 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
     var isValidBinaryPublicKey = function(binaryPublicKey){
         return !!isValidBinaryPublicKeyInternal(_elm_lang$core$Native_List.toArray(binaryPublicKey));
+    };
+
+    var isValidAddress = function(address){
+        var ProgramHash = all_crypto.base58.decode(address);
+        var ProgramHexString = all_crypto.cryptojs.enc.Hex.parse(ab2hexstring(ProgramHash.slice(0, 21)));
+        var ProgramSha256 = all_crypto.cryptojs.SHA256(ProgramHexString);
+        var ProgramSha256_2 = all_crypto.cryptojs.SHA256(ProgramSha256);
+        var ProgramSha256Buffer = hexstring2ab(ProgramSha256_2.toString());
+
+        return ab2hexstring(ProgramSha256Buffer.slice(0, 4)) === ab2hexstring(ProgramHash.slice(21, 25));
+    };
+
+    var isValidAddressInternal = function (address) {
+        try {
+            var ProgramHash = all_crypto.base58.decode(address);
+            var ProgramHexString = all_crypto.cryptojs.enc.Hex.parse(ab2hexstring(ProgramHash.slice(0, 21)));
+            var ProgramSha256 = all_crypto.cryptojs.SHA256(ProgramHexString);
+            var ProgramSha256_2 = all_crypto.cryptojs.SHA256(ProgramSha256);
+            var ProgramSha256Buffer = hexstring2ab(ProgramSha256_2.toString());
+
+            return ab2hexstring(ProgramSha256Buffer.slice(0, 4)) === ab2hexstring(ProgramHash.slice(21, 25));
+        } catch (e) {
+            return false;
+        }
     };
 
     var isValidBinaryPublicKeyInternal = function(binaryPublicKey){
@@ -26386,6 +26410,14 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     var getTransferData = function (coinData, binaryPublicKey, toAddress, amount) {
         try {
 
+            if (!isValidBinaryPublicKeyInternal(_elm_lang$core$Native_List.toArray(binaryPublicKey))) {
+                return _elm_lang$core$Result$Err("Error the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " is not a valid BinaryPublicKey");
+            }
+
+            if(!isValidAddressInternal(toAddress)) {
+                return _elm_lang$core$Result$Err("Error the supplied Address: " + toAddress + " is not a valid NEO Address");
+            }
+
             var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
 
             var ProgramHash = all_crypto.base58.decode(toAddress);
@@ -26492,15 +26524,21 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             }
 
-            return ab2hexstring(data);
+            return _elm_lang$core$Result$Ok(ab2hexstring(data));
 
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
     var getSignatureData = function (transactionData, binaryPrivateKey) {
         try {
+
+            var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
+
+            if (!isValidHexPrivateKeyInternal(hexPrivateKey)) {
+                return _elm_lang$core$Result$Err("Error the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " is not a valid BinaryPrivateKey");
+            }
 
             var msg = all_crypto.cryptojs.enc.Hex.parse(transactionData);
             var msgHash = all_crypto.cryptojs.SHA256(msg);
@@ -26515,17 +26553,25 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
                 ])
             };
 
-            return signature.signature.toString('hex');
+            return _elm_lang$core$Result$Ok(signature.signature.toString('hex'));
 
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
     var getContractData = function (transactionData, signatureData, binaryPublicKey) {
         try {
 
+            if (!isValidBinaryPublicKeyInternal(_elm_lang$core$Native_List.toArray(binaryPublicKey))) {
+                return _elm_lang$core$Result$Err("Error the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " is not a valid BinaryPublicKey");
+            }
+
             var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
+
+            if (!verifyPublicKeyEncoded(encodedPublicKey)) {
+                return _elm_lang$core$Result$Err("Error the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " because it is not a valid BinaryPublicKey");
+            }
 
             var signatureScript = createSignatureScript(encodedPublicKey);
 
@@ -26541,10 +26587,10 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
             data = data + "23";
             // script data
             data = data + signatureScript;
-            return data;
+            return _elm_lang$core$Result$Ok(data);
 
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
