@@ -395,7 +395,7 @@ getContractData transactionData signatureData binaryPublicKey =
 gets a binary public key from a hex private key
 
 -}
-getBinaryPublicKeyFromHexPrivateKey : HexPrivateKey -> Bool -> BinaryPublicKey
+getBinaryPublicKeyFromHexPrivateKey : HexPrivateKey -> Bool -> Result String BinaryPublicKey
 getBinaryPublicKeyFromHexPrivateKey hexPrivateKey shouldEncode =
     Native.Neo.getBinaryPublicKeyFromHexPrivateKey hexPrivateKey shouldEncode
 
@@ -405,7 +405,7 @@ getBinaryPublicKeyFromHexPrivateKey hexPrivateKey shouldEncode =
 gets a binary public key from a binary private key
 
 -}
-getBinaryPublicKeyFromBinaryPrivateKey : BinaryPrivateKey -> Bool -> BinaryPublicKey
+getBinaryPublicKeyFromBinaryPrivateKey : BinaryPrivateKey -> Bool -> Result String BinaryPublicKey
 getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey shouldEncode =
     Native.Neo.getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey shouldEncode
 
@@ -415,7 +415,7 @@ getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey shouldEncode =
 gets a hex public key from a binary private key
 
 -}
-getHexPublicKeyFromBinaryPrivateKey : BinaryPrivateKey -> Bool -> HexPublicKey
+getHexPublicKeyFromBinaryPrivateKey : BinaryPrivateKey -> Bool -> Result String HexPublicKey
 getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey shouldEncode =
     Native.Neo.getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey shouldEncode
 
@@ -425,6 +425,6 @@ getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey shouldEncode =
 gets a hex public key from a hex private key
 
 -}
-getHexPublicKeyFromHexPrivateKey : HexPrivateKey -> Bool -> HexPublicKey
+getHexPublicKeyFromHexPrivateKey : HexPrivateKey -> Bool -> Result String HexPublicKey
 getHexPublicKeyFromHexPrivateKey hexPrivateKey shouldEncode =
     Native.Neo.getHexPublicKeyFromHexPrivateKey hexPrivateKey shouldEncode

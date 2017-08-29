@@ -25998,40 +25998,95 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
-    var getBinaryPublicKeyFromHexPrivateKey = function (hexPrivateKey, shouldEncode) {
+    var getBinaryPublicKeyFromHexPrivateKeyInternal = function (hexPrivateKey, shouldEncode) {
         try {
+            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+                return -1;
+            }
+
             var ecparams = all_crypto.ecurve.getCurveByName('secp256r1');
             var curvePt = ecparams.G.multiply(all_crypto.BigInteger.fromBuffer(hexstring2ab(hexPrivateKey)));
 
             return _elm_lang$core$Native_List.fromArray(curvePt.getEncoded(shouldEncode));
         } catch (e) {
-            return "something went wrong: " + e;
+            return -2;
+        }
+    };
+
+
+    var getBinaryPublicKeyFromHexPrivateKey = function (hexPrivateKey, shouldEncode) {
+        try {
+            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+                return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPrivateKey: " + hexPrivateKey + " because it is not a valid HexPrivateKey");
+            }
+
+            var ecparams = all_crypto.ecurve.getCurveByName('secp256r1');
+            var curvePt = ecparams.G.multiply(all_crypto.BigInteger.fromBuffer(hexstring2ab(hexPrivateKey)));
+
+            return _elm_lang$core$Result$Ok(_elm_lang$core$Native_List.fromArray(curvePt.getEncoded(shouldEncode)));
+        } catch (e) {
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
     var getBinaryPublicKeyFromBinaryPrivateKey = function (binaryPrivateKey, shouldEncode) {
         try {
             var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
+            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+                return _elm_lang$core$Result$Err("Error the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " is not a valid BinaryPrivateKey");
+            }
 
-            return getBinaryPublicKeyFromHexPrivateKey(hexPrivateKey, shouldEncode);
+            var binaryPublicKey = getBinaryPublicKeyFromHexPrivateKeyInternal(hexPrivateKey, shouldEncode);
+
+            if(binaryPublicKey === -1){
+                _elm_lang$core$Result$Err("Error the supplied BinaryPrivateKey " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " is invalid");
+            } else if (binaryPublicKey === -2){
+                _elm_lang$core$Result$Err("Error unexpected went wrong");
+            }
+
+            return _elm_lang$core$Result$Ok(binaryPublicKey);
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
     var getHexPublicKeyFromBinaryPrivateKey = function (binaryPrivateKey, shouldEncode) {
         try {
             var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
+            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+                return _elm_lang$core$Result$Err("Error the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " is not a valid BinaryPrivateKey");
+            }
 
-            return ab2hexstring(_elm_lang$core$Native_List.toArray(getBinaryPublicKeyFromHexPrivateKey(hexPrivateKey, shouldEncode)));
+            var binaryPublicKey = getBinaryPublicKeyFromHexPrivateKeyInternal(hexPrivateKey, shouldEncode);
+
+            if(binaryPublicKey === -1){
+                _elm_lang$core$Result$Err("Error the supplied BinaryPrivateKey " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " is invalid");
+            } else if (binaryPublicKey === -2){
+                _elm_lang$core$Result$Err("Error unexpected went wrong");
+            }
+
+            return _elm_lang$core$Result$Ok(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
     var getHexPublicKeyFromHexPrivateKey = function (hexPrivateKey, shouldEncode) {
         try {
-            return ab2hexstring(_elm_lang$core$Native_List.toArray(getBinaryPublicKeyFromHexPrivateKey(hexPrivateKey, shouldEncode)));
+
+            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+                return _elm_lang$core$Result$Err("Error the supplied HexPrivateKey: " + hexPrivateKey + " is not a valid HexPrivateKey");
+            }
+
+            var binaryPublicKey = getBinaryPublicKeyFromHexPrivateKeyInternal(hexPrivateKey, shouldEncode);
+
+            if(binaryPublicKey === -1){
+                _elm_lang$core$Result$Err("Error the supplied HexPrivateKey " + hexPrivateKey + " is invalid");
+            } else if (binaryPublicKey === -2){
+                _elm_lang$core$Result$Err("Error unexpected went wrong");
+            }
+
+            return _elm_lang$core$Result$Ok(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
         } catch (e) {
             return "something went wrong: " + e;
         }
@@ -26126,7 +26181,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var binaryPrivateKey = _elm_lang$core$Native_List.fromArray(hexstring2ab(hexPrivateKey));
 
-            var binaryPublicKey = getBinaryPublicKeyFromHexPrivateKey(hexPrivateKey, true);
+            var binaryPublicKey = getBinaryPublicKeyFromHexPrivateKeyInternal(hexPrivateKey, true);
 
             var hexPublicKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey));
 

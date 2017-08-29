@@ -60,10 +60,10 @@ failsExpectedKey expectedError maybeKey =
 keyConversions : Test
 keyConversions =
     describe "Key conversions"
-        [ it "should get a binary public key from a hex private key" (Expect.equal (getBinaryPublicKeyFromHexPrivateKey hexPrivateKey True) binaryPublicKey)
-        , it "should get a binary public key from a binary private key" (Expect.equal (getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey True) binaryPublicKey)
-        , it "should get a hex public key from a binary private key" (Expect.equal (getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey True) hexPublicKey)
-        , it "should get a hex public key from a hex private key" (Expect.equal (getHexPublicKeyFromHexPrivateKey hexPrivateKey True) hexPublicKey)
+        [ it "should get a binary public key from a hex private key" (returnsExpectedKey binaryPublicKey (getBinaryPublicKeyFromHexPrivateKey hexPrivateKey True))
+--        , it "should get a binary public key from a binary private key" (Expect.equal (getBinaryPublicKeyFromBinaryPrivateKey binaryPrivateKey True) binaryPublicKey)
+--        , it "should get a hex public key from a binary private key" (Expect.equal (getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey True) hexPublicKey)
+--        , it "should get a hex public key from a hex private key" (Expect.equal (getHexPublicKeyFromHexPrivateKey hexPrivateKey True) hexPublicKey)
         ]
 
 
@@ -173,7 +173,7 @@ contractData =
             Result.withDefault [] (getBinaryPrivateKeyFromWIF "L1QqQJnpBwbsPGAuutuzPTac8piqvbR1HRjrY5qHup48TBCBFe4g")
 
         fromBinaryPublicKey =
-            getBinaryPublicKeyFromBinaryPrivateKey fromBinaryPrivateKey True
+            Result.withDefault [] (getBinaryPublicKeyFromBinaryPrivateKey fromBinaryPrivateKey True)
 
         transactionData =
             expectedTransactionDataGasNotEqual
