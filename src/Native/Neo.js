@@ -25912,32 +25912,70 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
     var getWIFFromBinaryPrivateKey = function (binaryPrivateKey) {
         try {
-            var hexKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
-            return all_crypto.wif.encode(128, new all_crypto.buffer.Buffer(hexKey, 'hex'), true);
+            var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
+            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+                return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " because it is not a valid BinaryPrivateKey");
+            }
+            return _elm_lang$core$Result$Ok(all_crypto.wif.encode(128, new all_crypto.buffer.Buffer(hexPrivateKey, 'hex'), true));
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
     var getWIFFromHexPrivateKey = function (hexPrivateKey) {
         try {
-            return all_crypto.wif.encode(128, new all_crypto.buffer.Buffer(hexPrivateKey, 'hex'), true);
+            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+                return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPrivateKey: " + hexPrivateKey + " because it is not a valid HexPrivateKey");
+            }
+            return _elm_lang$core$Result$Ok(all_crypto.wif.encode(128, new all_crypto.buffer.Buffer(hexPrivateKey, 'hex'), true));
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
     var getBinaryPrivateKeyFromWIF = function (wif) {
         try {
-            return _elm_lang$core$Native_List.fromArray(hexstring2ab(getHexPrivateKeyFromWIF(wif)));
+            var hexPrivateKey = getHexPrivateKeyFromWIFInternal(wif);
+
+            if (hexPrivateKey === -1) {
+                return _elm_lang$core$Result$Err("Error the supplied WIF: " + wif + " is not encoded as base58");
+            } else if (hexPrivateKey === -2) {
+                return _elm_lang$core$Result$Err("Error the supplied WIF: " + wif + " is invalid");
+            } else if (hexPrivateKey === -3) {
+                return _elm_lang$core$Result$Err("Oops something unexpected went wrong");
+            }
+
+            return _elm_lang$core$Result$Ok(_elm_lang$core$Native_List.fromArray(hexstring2ab(hexPrivateKey)));
         } catch (e) {
-            return "something went wrong: " + e;
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
     var getHexPrivateKeyFromWIF = function (wif) {
         try {
-            var data = all_crypto.base58.decode(wif);
+            var hexPrivateKey = getHexPrivateKeyFromWIFInternal(wif);
+
+            if (hexPrivateKey === -1) {
+                return _elm_lang$core$Result$Err("Error the supplied WIF: " + wif + " is not encoded as base58");
+            } else if (hexPrivateKey === -2) {
+                return _elm_lang$core$Result$Err("Error the supplied WIF: " + wif + " is invalid");
+            } else if (hexPrivateKey === -3) {
+                return _elm_lang$core$Result$Err("Oops something unexpected went wrong");
+            }
+
+            return _elm_lang$core$Result$Ok(hexPrivateKey);
+        } catch (e) {
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
+        }
+    };
+
+    var getHexPrivateKeyFromWIFInternal = function (wif) {
+        try {
+            try {
+                var data = all_crypto.base58.decode(wif);
+            } catch (e){
+                return -1;
+            }
 
             if (data.length !== 38 || data[0] !== 0x80 || data[33] !== 0x01) {
                 // basic encoding errors
@@ -25956,7 +25994,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             return ab2hexstring(data.slice(1, 33));
         } catch (e) {
-            return "something went wrong: " + e;
+            return -3;
         }
     };
 
@@ -26027,22 +26065,40 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         return all_crypto.base58.encode(datas);
     };
 
-    var verifyPublicKeyEncoded = function(binaryPublicKey){
-        var publicKeyArray = hexstring2ab( binaryPublicKey);
-        if ( publicKeyArray[0] !== 0x02 && publicKeyArray[0] !== 0x03 ) {
+    var isValidHexPublicKey = function(hexPublicKey){
+        var binaryPublicKey = hexstring2ab(hexPublicKey);
+        return isValidBinaryPublicKeyInternal(binaryPublicKey);
+    };
+
+    var isValidBinaryPublicKey = function(binaryPublicKey){
+        return !!isValidBinaryPublicKeyInternal(_elm_lang$core$Native_List.toArray(binaryPublicKey));
+    };
+
+    var isValidBinaryPublicKeyInternal = function(binaryPublicKey){
+        return !(binaryPublicKey[0] !== 0x02 && binaryPublicKey[0] !== 0x03);
+    };
+
+    var isValidHexPrivateKeyInternal = function(hexPrivateKey){
+        return hexPrivateKey.length === 64;
+    };
+
+
+    var verifyPublicKeyEncoded = function(hexPublicKey){
+        var binaryPublicKey = hexstring2ab(hexPublicKey);
+        if (!isValidBinaryPublicKeyInternal(binaryPublicKey)) {
             return false;
         }
 
         var ecparams = all_crypto.ecurve.getCurveByName('secp256r1');
-        var curvePt = all_crypto.ecurve.Point.decodeFrom(ecparams,new all_crypto.buffer.Buffer(binaryPublicKey,"hex"));
+        var curvePt = all_crypto.ecurve.Point.decodeFrom(ecparams,new all_crypto.buffer.Buffer(hexPublicKey,"hex"));
         var curvePtX = curvePt.affineX.toBuffer(32);
         var curvePtY = curvePt.affineY.toBuffer(32);
 
-        if ( publicKeyArray[0] === 0x02 && curvePtY[31] % 2 === 0 ) {
+        if ( binaryPublicKey[0] === 0x02 && curvePtY[31] % 2 === 0 ) {
             return true;
         }
 
-        return publicKeyArray[0] === 0x03 && curvePtY[31] % 2 === 1;
+        return binaryPublicKey[0] === 0x03 && curvePtY[31] % 2 === 1;
     };
 
     var getAccountFromBinaryPrivateKey = function (binaryPrivateKey) {
@@ -26050,7 +26106,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
 
-            if (hexPrivateKey.length !== 64) {
+            if (!isValidHexPrivateKeyInternal(hexPrivateKey)) {
                 return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " because it is not a valid BinaryPrivateKey");
             }
 
@@ -26064,7 +26120,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     var getAccountFromHexPrivateKey = function (hexPrivateKey) {
         try {
 
-            if (hexPrivateKey.length !== 64) {
+            if (!isValidHexPrivateKeyInternal(hexPrivateKey)) {
                 return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPrivateKey: " + hexPrivateKey + " because it is not a valid HexPrivateKey");
             }
 
@@ -26108,6 +26164,10 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     var getAccountFromBinaryPublicKey = function (binaryPublicKey) {
         try {
 
+            if(!isValidBinaryPublicKeyInternal(_elm_lang$core$Native_List.toArray(binaryPublicKey))){
+                return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " because it is not a valid BinaryPublicKey");
+            }
+
             var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
 
             if (!verifyPublicKeyEncoded(encodedPublicKey)) {
@@ -26136,7 +26196,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
                 , address: address
             });
         } catch (e) {
-            return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " because it is not a valid BinaryPublicKey");
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
@@ -26144,6 +26204,10 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         try {
 
             var binaryPublicKey = hexstring2ab(hexPublicKey);
+
+            if (!isValidBinaryPublicKeyInternal(binaryPublicKey)) {
+                return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPublicKey: " + hexPublicKey + " because it is not a valid HexPublicKey");
+            }
 
             var encodedPublicKey = getPublicKeyEncoded(hexPublicKey);
 
@@ -26171,7 +26235,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
                 , address: address
             });
         } catch (e) {
-            return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPublicKey: " + hexPublicKey + " because it is not a valid HexPublicKey");
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
     };
 
@@ -26447,6 +26511,8 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         getBinaryPublicKeyFromBinaryPrivateKey : F2(getBinaryPublicKeyFromBinaryPrivateKey),
         getHexPublicKeyFromBinaryPrivateKey    : F2(getHexPublicKeyFromBinaryPrivateKey),
         getHexPublicKeyFromHexPrivateKey       : F2(getHexPublicKeyFromHexPrivateKey)
+        // isValidBinaryPublicKey                 : isValidBinaryPublicKey,
+        // isValidHexPublicKey                    : isValidHexPublicKey
     }
 
 }());

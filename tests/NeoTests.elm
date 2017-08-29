@@ -26,11 +26,35 @@ privateAndPublicKeys =
     describe "Private and public keys"
         [ --        it "should generate a hex private key" (Expect.equal (String.length generateHexPrivateKey) 64)
           --        , it "should generate a binary private key" (Expect.equal (List.length generateBinaryPrivateKey) 32)
-          it "should get a wif from the binary private key" (Expect.equal (getWIFFromBinaryPrivateKey binaryPrivateKey) "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU")
-        , it "should get a wif from the hex private key" (Expect.equal (getWIFFromHexPrivateKey hexPrivateKey) "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU")
-        , it "should get a binary private key from a wif" (Expect.equal (getBinaryPrivateKeyFromWIF wif) binaryPrivateKey)
-        , it "should get a hex private key from a wif" (Expect.equal (getHexPrivateKeyFromWIF wif) hexPrivateKey)
+          it "should get a wif from the binary private key" (returnsExpectedKey "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU" (getWIFFromBinaryPrivateKey binaryPrivateKey))
+        , it "should return an error given an invalid binary private key" (failsExpectedKey "Error could not get account information from the supplied BinaryPrivateKey: 1,2,3 because it is not a valid BinaryPrivateKey" (getWIFFromBinaryPrivateKey [ 1, 2, 3 ]))
+        , it "should get a wif from the hex private key" (returnsExpectedKey "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU" (getWIFFromHexPrivateKey hexPrivateKey))
+        , it "should return an error given an invalid hex private key" (failsExpectedKey "Error could not get account information from the supplied HexPrivateKey: not-a-hex-private-key because it is not a valid HexPrivateKey" (getWIFFromHexPrivateKey "not-a-hex-private-key"))
+        , it "should get a binary private key from a wif" (returnsExpectedKey binaryPrivateKey (getBinaryPrivateKeyFromWIF wif))
+        , it "should return an error given an invalid wif (getBinaryPrivateKeyFromWIF)" (failsExpectedKey "Error the supplied WIF: not-a-valid-wif is not encoded as base58" (getBinaryPrivateKeyFromWIF "not-a-valid-wif"))
+        , it "should get a hex private key from a wif" (returnsExpectedKey hexPrivateKey (getHexPrivateKeyFromWIF wif))
+        , it "should return an error given an invalid wif (getHexPrivateKeyFromWIF)" (failsExpectedKey "Error the supplied WIF: not-a-valid-wif is not encoded as base58" (getHexPrivateKeyFromWIF "not-a-valid-wif"))
         ]
+
+
+returnsExpectedKey : a -> Result String a -> Expectation
+returnsExpectedKey expectedKey maybeKey =
+    case maybeKey of
+        Ok account ->
+            Expect.equal account expectedKey
+
+        Err error ->
+            Expect.fail error
+
+
+failsExpectedKey : String -> Result String a -> Expectation
+failsExpectedKey expectedError maybeKey =
+    case maybeKey of
+        Ok key ->
+            Expect.fail "Should not have returned a key"
+
+        Err error ->
+            Expect.equal error expectedError
 
 
 keyConversions : Test
@@ -108,7 +132,7 @@ transactionTransferData : AssetName -> AssetId -> Float -> TransactionData
 transactionTransferData assetName assetId amount =
     let
         fromHexPrivateKey =
-            getHexPrivateKeyFromWIF "L1QqQJnpBwbsPGAuutuzPTac8piqvbR1HRjrY5qHup48TBCBFe4g"
+            Result.withDefault "" (getHexPrivateKeyFromWIF "L1QqQJnpBwbsPGAuutuzPTac8piqvbR1HRjrY5qHup48TBCBFe4g")
 
         fromAccount =
             Result.withDefault emptyAccount (getAccountFromHexPrivateKey fromHexPrivateKey)
@@ -129,7 +153,7 @@ signatureData : SignatureData
 signatureData =
     let
         fromBinaryPrivateKey =
-            getBinaryPrivateKeyFromWIF "L1QqQJnpBwbsPGAuutuzPTac8piqvbR1HRjrY5qHup48TBCBFe4g"
+            Result.withDefault [] (getBinaryPrivateKeyFromWIF "L1QqQJnpBwbsPGAuutuzPTac8piqvbR1HRjrY5qHup48TBCBFe4g")
 
         transactionData =
             expectedTransactionDataGasNotEqual
@@ -146,7 +170,7 @@ contractData : ContractData
 contractData =
     let
         fromBinaryPrivateKey =
-            getBinaryPrivateKeyFromWIF "L1QqQJnpBwbsPGAuutuzPTac8piqvbR1HRjrY5qHup48TBCBFe4g"
+            Result.withDefault [] (getBinaryPrivateKeyFromWIF "L1QqQJnpBwbsPGAuutuzPTac8piqvbR1HRjrY5qHup48TBCBFe4g")
 
         fromBinaryPublicKey =
             getBinaryPublicKeyFromBinaryPrivateKey fromBinaryPrivateKey True

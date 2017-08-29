@@ -285,7 +285,7 @@ generateHexPrivateKey =
 gets a WIF from a binary private key
 
 -}
-getWIFFromBinaryPrivateKey : BinaryPrivateKey -> Wif
+getWIFFromBinaryPrivateKey : BinaryPrivateKey -> Result String Wif
 getWIFFromBinaryPrivateKey binaryPrivateKey =
     Native.Neo.getWIFFromBinaryPrivateKey binaryPrivateKey
 
@@ -295,7 +295,7 @@ getWIFFromBinaryPrivateKey binaryPrivateKey =
 gets a WIF from a hex private key
 
 -}
-getWIFFromHexPrivateKey : HexPrivateKey -> Wif
+getWIFFromHexPrivateKey : HexPrivateKey -> Result String Wif
 getWIFFromHexPrivateKey hexPrivateKey =
     Native.Neo.getWIFFromHexPrivateKey hexPrivateKey
 
@@ -305,7 +305,7 @@ getWIFFromHexPrivateKey hexPrivateKey =
 gets a binary private key from a WIF
 
 -}
-getBinaryPrivateKeyFromWIF : Wif -> BinaryPrivateKey
+getBinaryPrivateKeyFromWIF : Wif -> Result String BinaryPrivateKey
 getBinaryPrivateKeyFromWIF wif =
     Native.Neo.getBinaryPrivateKeyFromWIF wif
 
@@ -315,7 +315,7 @@ getBinaryPrivateKeyFromWIF wif =
 gets a hex private key from a WIF
 
 -}
-getHexPrivateKeyFromWIF : Wif -> HexPrivateKey
+getHexPrivateKeyFromWIF : Wif -> Result String HexPrivateKey
 getHexPrivateKeyFromWIF wif =
     Native.Neo.getHexPrivateKeyFromWIF wif
 
