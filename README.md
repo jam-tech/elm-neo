@@ -17,7 +17,7 @@ There are 6 areas:
 
 ### Private and public keys
 
-* generating keys products a task so needs to be handled in an update function e.g. 
+* generating keys produces a task so needs to be handled in an update function e.g. 
 
 ```
 genKeyMsg : Cmd Msg
