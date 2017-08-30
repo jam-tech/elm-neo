@@ -36,7 +36,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     var getWIFFromBinaryPrivateKey = function (binaryPrivateKey) {
         try {
             var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
-            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+            if(!isValidHexPrivateKey(hexPrivateKey)){
                 return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " because it is not a valid BinaryPrivateKey");
             }
             return _elm_lang$core$Result$Ok(all_crypto.wif.encode(128, new all_crypto.buffer.Buffer(hexPrivateKey, 'hex'), true));
@@ -47,7 +47,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
     var getWIFFromHexPrivateKey = function (hexPrivateKey) {
         try {
-            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+            if(!isValidHexPrivateKey(hexPrivateKey)){
                 return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPrivateKey: " + hexPrivateKey + " because it is not a valid HexPrivateKey");
             }
             return _elm_lang$core$Result$Ok(all_crypto.wif.encode(128, new all_crypto.buffer.Buffer(hexPrivateKey, 'hex'), true));
@@ -123,7 +123,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
     var getBinaryPublicKeyFromHexPrivateKeyInternal = function (hexPrivateKey, shouldEncode) {
         try {
-            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+            if(!isValidHexPrivateKey(hexPrivateKey)){
                 return -1;
             }
 
@@ -139,7 +139,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
     var getBinaryPublicKeyFromHexPrivateKey = function (hexPrivateKey, shouldEncode) {
         try {
-            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+            if(!isValidHexPrivateKey(hexPrivateKey)){
                 return _elm_lang$core$Result$Err("Error the supplied HexPrivateKey: " + hexPrivateKey + " is not a valid HexPrivateKey");
             }
 
@@ -155,7 +155,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     var getBinaryPublicKeyFromBinaryPrivateKey = function (binaryPrivateKey, shouldEncode) {
         try {
             var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
-            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+            if(!isValidHexPrivateKey(hexPrivateKey)){
                 return _elm_lang$core$Result$Err("Error the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " is not a valid BinaryPrivateKey");
             }
 
@@ -176,7 +176,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     var getHexPublicKeyFromBinaryPrivateKey = function (binaryPrivateKey, shouldEncode) {
         try {
             var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
-            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+            if(!isValidHexPrivateKey(hexPrivateKey)){
                 return _elm_lang$core$Result$Err("Error the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " is not a valid BinaryPrivateKey");
             }
 
@@ -197,7 +197,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     var getHexPublicKeyFromHexPrivateKey = function (hexPrivateKey, shouldEncode) {
         try {
 
-            if(!isValidHexPrivateKeyInternal(hexPrivateKey)){
+            if(!isValidHexPrivateKey(hexPrivateKey)){
                 return _elm_lang$core$Result$Err("Error the supplied HexPrivateKey: " + hexPrivateKey + " is not a valid HexPrivateKey");
             }
 
@@ -252,17 +252,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         return !!isValidBinaryPublicKeyInternal(_elm_lang$core$Native_List.toArray(binaryPublicKey));
     };
 
-    var isValidAddress = function(address){
-        var ProgramHash = all_crypto.base58.decode(address);
-        var ProgramHexString = all_crypto.cryptojs.enc.Hex.parse(ab2hexstring(ProgramHash.slice(0, 21)));
-        var ProgramSha256 = all_crypto.cryptojs.SHA256(ProgramHexString);
-        var ProgramSha256_2 = all_crypto.cryptojs.SHA256(ProgramSha256);
-        var ProgramSha256Buffer = hexstring2ab(ProgramSha256_2.toString());
-
-        return ab2hexstring(ProgramSha256Buffer.slice(0, 4)) === ab2hexstring(ProgramHash.slice(21, 25));
-    };
-
-    var isValidAddressInternal = function (address) {
+    var isValidAddress = function (address) {
         try {
             var ProgramHash = all_crypto.base58.decode(address);
             var ProgramHexString = all_crypto.cryptojs.enc.Hex.parse(ab2hexstring(ProgramHash.slice(0, 21)));
@@ -280,10 +270,19 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         return !(binaryPublicKey[0] !== 0x02 && binaryPublicKey[0] !== 0x03);
     };
 
-    var isValidHexPrivateKeyInternal = function(hexPrivateKey){
+    var isValidHexPrivateKey = function(hexPrivateKey){
         return hexPrivateKey.length === 64;
     };
 
+    var isValidBinaryPrivateKey = function(binaryPrivateKey){
+        var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
+        isValidHexPrivateKey(hexPrivateKey)
+    };
+
+    var isValidWif = function(wif){
+        var hexPrivateKey = getHexPrivateKeyFromWIFInternal(wif);
+        return !((hexPrivateKey === -1 || hexPrivateKey === -2 || hexPrivateKey === -3));
+    };
 
     var verifyPublicKeyEncoded = function(hexPublicKey){
         var binaryPublicKey = hexstring2ab(hexPublicKey);
@@ -308,7 +307,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
 
-            if (!isValidHexPrivateKeyInternal(hexPrivateKey)) {
+            if (!isValidHexPrivateKey(hexPrivateKey)) {
                 return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " because it is not a valid BinaryPrivateKey");
             }
 
@@ -322,7 +321,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     var getAccountFromHexPrivateKey = function (hexPrivateKey) {
         try {
 
-            if (!isValidHexPrivateKeyInternal(hexPrivateKey)) {
+            if (!isValidHexPrivateKey(hexPrivateKey)) {
                 return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPrivateKey: " + hexPrivateKey + " because it is not a valid HexPrivateKey");
             }
 
@@ -537,7 +536,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
                 return _elm_lang$core$Result$Err("Error the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " is not a valid BinaryPublicKey");
             }
 
-            if(!isValidAddressInternal(toAddress)) {
+            if(!isValidAddress(toAddress)) {
                 return _elm_lang$core$Result$Err("Error the supplied Address: " + toAddress + " is not a valid NEO Address");
             }
 
@@ -659,7 +658,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
 
-            if (!isValidHexPrivateKeyInternal(hexPrivateKey)) {
+            if (!isValidHexPrivateKey(hexPrivateKey)) {
                 return _elm_lang$core$Result$Err("Error the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " is not a valid BinaryPrivateKey");
             }
 
@@ -734,9 +733,13 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         getBinaryPublicKeyFromHexPrivateKey    : F2(getBinaryPublicKeyFromHexPrivateKey),
         getBinaryPublicKeyFromBinaryPrivateKey : F2(getBinaryPublicKeyFromBinaryPrivateKey),
         getHexPublicKeyFromBinaryPrivateKey    : F2(getHexPublicKeyFromBinaryPrivateKey),
-        getHexPublicKeyFromHexPrivateKey       : F2(getHexPublicKeyFromHexPrivateKey)
-        // isValidBinaryPublicKey                 : isValidBinaryPublicKey,
-        // isValidHexPublicKey                    : isValidHexPublicKey
+        getHexPublicKeyFromHexPrivateKey       : F2(getHexPublicKeyFromHexPrivateKey),
+        isValidBinaryPublicKey                 : isValidBinaryPublicKey,
+        isValidHexPublicKey                    : isValidHexPublicKey,
+        isValidHexPrivateKey                   : isValidHexPrivateKey,
+        isValidBinaryPrivateKey                : isValidBinaryPrivateKey,
+        isValidAddress                         : isValidAddress,
+        isValidWif                             : isValidWif
     }
 
 }());

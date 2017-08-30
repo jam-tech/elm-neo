@@ -38,6 +38,12 @@ module Neo
         , getBinaryPublicKeyFromBinaryPrivateKey
         , getHexPublicKeyFromBinaryPrivateKey
         , getHexPublicKeyFromHexPrivateKey
+        , isValidBinaryPublicKey
+        , isValidHexPublicKey
+        , isValidAddress
+        , isValidHexPrivateKey
+        , isValidBinaryPrivateKey
+        , isValidWif
         )
 
 {-| Elm Neo provides tools for the neo wallet and crypto.
@@ -45,7 +51,8 @@ module Neo
 @docs BinaryPrivateKey, HexPrivateKey, Wif, HexPublicKey, BinaryPublicKey, generateBinaryPrivateKey, generateHexPrivateKey, getWIFFromBinaryPrivateKey, getWIFFromHexPrivateKey, getBinaryPrivateKeyFromWIF,
       PublicKeyHash, ProgramHash, Address, Account, TransactionData, getHexPrivateKeyFromWIF, getAccountFromBinaryPrivateKey, getAccountFromHexPrivateKey, getAccountFromBinaryPublicKey,
       getAccountFromHexPublicKey, Asset, AssetName, CoinData, Transactions, Transaction, TransactionId, neoAssetId, gasAssetId, AssetId, getTransferData,
-      SignatureData, getSignatureData, ContractData, getContractData, getBinaryPublicKeyFromHexPrivateKey,getBinaryPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromHexPrivateKey
+      SignatureData, getSignatureData, ContractData, getContractData, getBinaryPublicKeyFromHexPrivateKey,getBinaryPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromHexPrivateKey,
+      isValidBinaryPublicKey, isValidHexPublicKey, isValidAddress, isValidHexPrivateKey, isValidBinaryPrivateKey, isValidWif
 
 
 -}
@@ -428,3 +435,63 @@ gets a hex public key from a hex private key
 getHexPublicKeyFromHexPrivateKey : HexPrivateKey -> Bool -> Result String HexPublicKey
 getHexPublicKeyFromHexPrivateKey hexPrivateKey shouldEncode =
     Native.Neo.getHexPublicKeyFromHexPrivateKey hexPrivateKey shouldEncode
+
+
+{-| isValidBinaryPublicKey
+
+checks if binary public key is valid
+
+-}
+isValidBinaryPublicKey : BinaryPublicKey -> Bool
+isValidBinaryPublicKey binaryPublicKey =
+    Native.Neo.isValidBinaryPublicKey binaryPublicKey
+
+
+{-| isValidHexPublicKey
+
+checks if hex public key is valid
+
+-}
+isValidHexPublicKey : HexPublicKey -> Bool
+isValidHexPublicKey hexPublicKey =
+    Native.Neo.isValidHexPublicKey hexPublicKey
+
+
+{-| isValidAddress
+
+check if address is valid
+
+-}
+isValidAddress : Address -> Bool
+isValidAddress address =
+    Native.Neo.isValidAddress address
+
+
+{-| isValidHexPrivateKey
+
+check if address is valid
+
+-}
+isValidHexPrivateKey : HexPrivateKey -> Bool
+isValidHexPrivateKey hexPrivateKey =
+    Native.Neo.isValidHexPrivateKey hexPrivateKey
+
+
+{-| isValidBinaryPrivateKey
+
+check if address is valid
+
+-}
+isValidBinaryPrivateKey : BinaryPrivateKey -> Bool
+isValidBinaryPrivateKey binaryPrivateKey =
+    Native.Neo.isValidBinaryPrivateKey binaryPrivateKey
+
+
+{-| isValidWif
+
+check if wif is valid
+
+-}
+isValidWif : Wif -> Bool
+isValidWif wif =
+    Native.Neo.isValidWif wif

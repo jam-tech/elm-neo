@@ -16,6 +16,7 @@ main =
     , signatures
     , contracts
     , keyConversions
+    , formatValidations
     ]
         |> concat
         |> Test.Runner.Html.run
@@ -170,6 +171,22 @@ contracts =
     describe "Contract Data"
         [ it "should return contract data" (returnsExpectedContractData expectedContractData contractData)
         , it "should return an error given an invalid binary public key " (failsExpectedContractData "Error the supplied BinaryPublicKey: 1,2,3 is not a valid BinaryPublicKey" (getContractData "transaction-data" "signature-data" [ 1, 2, 3 ]))
+        ]
+
+
+formatValidations : Test
+formatValidations =
+    describe "Format validations"
+        [ it "should return true for a valid binary public key" (Expect.equal (isValidBinaryPublicKey binaryPublicKey) True)
+        , it "should return false for an invalid binary public key" (Expect.equal (isValidBinaryPublicKey [ 1, 2, 3 ]) False)
+        , it "should return true for a valid hex public key" (Expect.equal (isValidHexPublicKey hexPublicKey) True)
+        , it "should return false for an invalid hex public key" (Expect.equal (isValidHexPublicKey "not-a-valid-hex-public-key") False)
+        , it "should return true for a valid address" (Expect.equal (isValidAddress "ALfnhLg7rUyL6Jr98bzzoxz5J7m64fbR4s") True)
+        , it "should return false for an invalid address" (Expect.equal (isValidAddress "not-a-valid-address") False)
+        , it "should return true for a valid hex private key" (Expect.equal (isValidHexPrivateKey hexPrivateKey) True)
+        , it "should return false for an invalid hex private key" (Expect.equal (isValidHexPrivateKey "not-a-valid-hex-private-key") False)
+        , it "should return true for a valid wif" (Expect.equal (isValidWif wif) True)
+        , it "should return false for an invalid wif" (Expect.equal (isValidWif "not-a-valid-wif") False)
         ]
 
 
