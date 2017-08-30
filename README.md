@@ -6,15 +6,32 @@ This project provides elm tools for the Neo blockchain
 
 ## Usage
 
-There are 5 areas:
+There are 6 areas:
 
 * Private and public keys
 * Accounts
 * Transactions
 * Signatures
 * Contracts
+* Format validations
 
 ### Private and public keys
+
+* generating keys products a task so needs to be handled in an update function e.g. 
+
+```
+genKeyMsg : Cmd Msg
+genKeyMsg = 
+ Task.perform CreateWalletResponse Neo.generateHexPrivateKey
+ 
+update msg model =
+   case msg of 
+    CreateWalletResponse hexPrivateKey -> 
+      (model, Cmd.none)
+
+```
+
+* all the other functions return a Result **Error** **Item**
 
 ```
 import Neo as Neo
@@ -42,6 +59,8 @@ Neo.getHexPublicKeyFromHexPrivateKey hexPrivateKey True
 
 ### Accounts
 
+* all the functions here return a Result **Error** **Item**
+
 ```
 import Neo as Neo
 
@@ -68,6 +87,8 @@ type alias Account =
 ```
 
 ### Transactions
+
+* all the functions here return a Result **Error** **Item**
 
 ```
 import Neo as Neo
@@ -123,6 +144,8 @@ type alias Transaction =
 
 ### Signatures
 
+* all the functions here return a Result **Error** **Item**
+
 ```
 import Neo as Neo
 
@@ -143,6 +166,8 @@ signatureData =
 
 ### Contracts
 
+* all the functions here return a Result **Error** **Item**
+
 ```
 contractData : ContractData
 contractData =
@@ -162,6 +187,26 @@ contractData =
         getContractData transactionData signatureData fromBinaryPublicKey
 
 ``` 
+
+### Format validations
+
+* all the functions here return Bool
+
+```
+
+isValidBinaryPublicKey binaryPublicKey
+
+isValidHexPublicKey hexPublicKey
+
+isValidAddress address
+
+isValidHexPrivateKey hexPrivateKey
+
+isValidBinaryPrivateKey binaryPrivateKey
+
+isValidWif wif
+
+```
 
 ## Install
 

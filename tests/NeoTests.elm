@@ -22,11 +22,12 @@ main =
         |> Test.Runner.Html.run
 
 
+-- TODO - the generate private keys is done via Task so needs some kind of update loop to catch it and check.
 privateAndPublicKeys : Test
 privateAndPublicKeys =
     describe "Private and public keys"
-        [ --        it "should generate a hex private key" (Expect.equal (String.length generateHexPrivateKey) 64)
-          --        , it "should generate a binary private key" (Expect.equal (List.length generateBinaryPrivateKey) 32)
+        [ -- it "should generate a hex private key" (Expect.equal (String.length generateHexPrivateKey) 64)
+          -- , it "should generate a binary private key" (Expect.equal (List.length generateBinaryPrivateKey) 32)
           it "should get a wif from the binary private key" (returnsExpectedKey "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU" (getWIFFromBinaryPrivateKey binaryPrivateKey))
         , it "should return an error given an invalid binary private key" (failsExpectedKey "Error could not get account information from the supplied BinaryPrivateKey: 1,2,3 because it is not a valid BinaryPrivateKey" (getWIFFromBinaryPrivateKey [ 1, 2, 3 ]))
         , it "should get a wif from the hex private key" (returnsExpectedKey "L3sJEyvhJyhoknVXeGFGnJgmGNv8cAvK7VLCmn6BJy6BhRyGrhTU" (getWIFFromHexPrivateKey hexPrivateKey))
