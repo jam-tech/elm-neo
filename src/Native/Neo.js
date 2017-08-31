@@ -26013,6 +26013,50 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
+    var getBinaryPrivateKeyFromHexPrivateKey = function(hexPrivateKey) {
+        try {
+            if(!isValidHexPrivateKey(hexPrivateKey)){
+                return _elm_lang$core$Result$Err("The supplied HexPrivateKey: " + hexPrivateKey + " is not a valid HexPrivateKey");
+            }
+            return _elm_lang$core$Result$Ok(_elm_lang$core$Native_List.fromArray(hexstring2ab(hexPrivateKey)));
+        } catch (e) {
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
+        }
+    };
+
+    var getHexPrivateKeyFromBinaryPrivateKey = function(binaryPrivateKey){
+        try {
+
+            if(!isValidBinaryPrivateKey(binaryPrivateKey)){
+                return _elm_lang$core$Result$Err("The supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " is not a valid BinaryPrivateKey");
+            }
+            return _elm_lang$core$Result$Ok(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey)));
+        } catch (e) {
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
+        }
+    };
+
+    var getBinaryPublicKeyFromHexPublicKey = function(hexPublicKey){
+        try {
+            if(!isValidHexPublicKey(hexPublicKey)){
+                return _elm_lang$core$Result$Err("The supplied HexPublicKey: " + hexPublicKey + " is not a valid HexPublicKey");
+            }
+            return _elm_lang$core$Result$Ok(_elm_lang$core$Native_List.fromArray(hexstring2ab(hexPublicKey)));
+        } catch (e) {
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
+        }
+    };
+
+    var getHexPublicKeyFromBinaryPublicKey = function(binaryPublicKey){
+        try {
+            if(!isValidBinaryPublicKeyInternal(_elm_lang$core$Native_List.toArray(binaryPublicKey))){
+                return _elm_lang$core$Result$Err("The supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " is not a valid BinaryPublicKey");
+            }
+            return _elm_lang$core$Result$Ok(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
+        } catch (e) {
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
+        }
+    };
 
     var getBinaryPublicKeyFromHexPrivateKey = function (hexPrivateKey, shouldEncode) {
         try {
@@ -26153,7 +26197,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
     var isValidBinaryPrivateKey = function(binaryPrivateKey){
         var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
-        isValidHexPrivateKey(hexPrivateKey)
+        return isValidHexPrivateKey(hexPrivateKey)
     };
 
     var isValidWif = function(wif){
@@ -26616,7 +26660,11 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         isValidHexPrivateKey                   : isValidHexPrivateKey,
         isValidBinaryPrivateKey                : isValidBinaryPrivateKey,
         isValidAddress                         : isValidAddress,
-        isValidWif                             : isValidWif
+        isValidWif                             : isValidWif,
+        getBinaryPrivateKeyFromHexPrivateKey   : getBinaryPrivateKeyFromHexPrivateKey,
+        getHexPrivateKeyFromBinaryPrivateKey   : getHexPrivateKeyFromBinaryPrivateKey,
+        getBinaryPublicKeyFromHexPublicKey     : getBinaryPublicKeyFromHexPublicKey,
+        getHexPublicKeyFromBinaryPublicKey     : getHexPublicKeyFromBinaryPublicKey
     }
 
 }());

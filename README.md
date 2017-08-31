@@ -57,6 +57,18 @@ Neo.getHexPublicKeyFromBinaryPrivateKey binaryPrivateKey True
 Neo.getHexPublicKeyFromHexPrivateKey hexPrivateKey True
 ```
 
+* Key conversions
+
+```
+Neo.getBinaryPrivateKeyFromHexPrivateKey hexPrivateKey
+
+Neo.getHexPrivateKeyFromBinaryPrivateKey binaryPrivateKey
+
+Neo.getBinaryPublicKeyFromHexPublicKey hexPublicKey
+
+Neo.getHexPublicKeyFromBinaryPublicKey binaryPublicKey
+```
+
 ### Accounts
 
 * all the functions here return a Result **Error** **Item**
@@ -214,7 +226,7 @@ you must use [elm-github-install](https://github.com/gdotdesign/elm-github-insta
 
 ```
 "dependencies": {
-  "kingsleyh/elm-neo": "1.0.4 <= v < 2.0.0"
+  "kingsleyh/elm-neo": "1.0.5 <= v < 2.0.0"
 }
 ```
 

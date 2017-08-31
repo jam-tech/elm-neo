@@ -22,7 +22,10 @@ main =
         |> Test.Runner.Html.run
 
 
+
 -- TODO - the generate private keys is done via Task so needs some kind of update loop to catch it and check.
+
+
 privateAndPublicKeys : Test
 privateAndPublicKeys =
     describe "Private and public keys"
@@ -70,6 +73,14 @@ keyConversions =
         , it "should return an error given an invalid binary private key (getHexPublicKeyFromBinaryPrivateKey)" (failsExpectedKey "Error the supplied BinaryPrivateKey: 1,2,3 is not a valid BinaryPrivateKey" (getHexPublicKeyFromBinaryPrivateKey [ 1, 2, 3 ] True))
         , it "should get a hex public key from a hex private key" (returnsExpectedKey hexPublicKey (getHexPublicKeyFromHexPrivateKey hexPrivateKey True))
         , it "should return an error given an invalid hex private key (getHexPublicKeyFromHexPrivateKey)" (failsExpectedKey "Error the supplied HexPrivateKey: not-a-valid-hex-private-key is not a valid HexPrivateKey" (getHexPublicKeyFromHexPrivateKey "not-a-valid-hex-private-key" True))
+        , it "should convert hex private key to binary private key" (returnsExpectedKey binaryPrivateKey (getBinaryPrivateKeyFromHexPrivateKey hexPrivateKey))
+        , it "should error on invalid hex private key (getBinaryPrivateKeyFromHexPrivateKey)" (failsExpectedKey "The supplied HexPrivateKey: not-a-valid-hex-private-key is not a valid HexPrivateKey" (getBinaryPrivateKeyFromHexPrivateKey "not-a-valid-hex-private-key"))
+        , it "should convert binary private key to hex private key" (returnsExpectedKey hexPrivateKey (getHexPrivateKeyFromBinaryPrivateKey binaryPrivateKey))
+        , it "should error on invalid binary private key (getHexPrivateKeyFromBinaryPrivateKey)" (failsExpectedKey "The supplied BinaryPrivateKey: 1,2,3 is not a valid BinaryPrivateKey" (getHexPrivateKeyFromBinaryPrivateKey [ 1, 2, 3 ]))
+        , it "should convert hex public key to binary public key" (returnsExpectedKey binaryPublicKey (getBinaryPublicKeyFromHexPublicKey hexPublicKey))
+        , it "should error on invalid hex public key (getBinaryPublicKeyFromHexPublicKey)" (failsExpectedKey "The supplied HexPublicKey: not-a-valid-hex-public-key is not a valid HexPublicKey" (getBinaryPublicKeyFromHexPublicKey "not-a-valid-hex-public-key"))
+        , it "should convert binary public key to hex public key" (returnsExpectedKey hexPublicKey (getHexPublicKeyFromBinaryPublicKey binaryPublicKey))
+        , it "should error on invalid binary public key (getHexPublicKeyFromBinaryPublicKey)" (failsExpectedKey "The supplied BinaryPublicKey: 1,2,3 is not a valid BinaryPublicKey" (getHexPublicKeyFromBinaryPublicKey [ 1, 2, 3 ]))
         ]
 
 

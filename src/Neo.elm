@@ -44,6 +44,10 @@ module Neo
         , isValidHexPrivateKey
         , isValidBinaryPrivateKey
         , isValidWif
+        , getBinaryPrivateKeyFromHexPrivateKey
+        , getHexPrivateKeyFromBinaryPrivateKey
+        , getBinaryPublicKeyFromHexPublicKey
+        , getHexPublicKeyFromBinaryPublicKey
         )
 
 {-| Elm Neo provides tools for the neo wallet and crypto.
@@ -52,7 +56,7 @@ module Neo
       PublicKeyHash, ProgramHash, Address, Account, TransactionData, getHexPrivateKeyFromWIF, getAccountFromBinaryPrivateKey, getAccountFromHexPrivateKey, getAccountFromBinaryPublicKey,
       getAccountFromHexPublicKey, Asset, AssetName, CoinData, Transactions, Transaction, TransactionId, neoAssetId, gasAssetId, AssetId, getTransferData,
       SignatureData, getSignatureData, ContractData, getContractData, getBinaryPublicKeyFromHexPrivateKey,getBinaryPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromHexPrivateKey,
-      isValidBinaryPublicKey, isValidHexPublicKey, isValidAddress, isValidHexPrivateKey, isValidBinaryPrivateKey, isValidWif
+      isValidBinaryPublicKey, isValidHexPublicKey, isValidAddress, isValidHexPrivateKey, isValidBinaryPrivateKey, isValidWif, getBinaryPrivateKeyFromHexPrivateKey, getHexPrivateKeyFromBinaryPrivateKey, getBinaryPublicKeyFromHexPublicKey, getHexPublicKeyFromBinaryPublicKey
 
 
 -}
@@ -495,3 +499,43 @@ check if wif is valid
 isValidWif : Wif -> Bool
 isValidWif wif =
     Native.Neo.isValidWif wif
+
+
+{-| getBinaryPrivateKeyFromHexPrivateKey
+
+convert hex private key to binary private key
+
+-}
+getBinaryPrivateKeyFromHexPrivateKey : HexPrivateKey -> Result String BinaryPrivateKey
+getBinaryPrivateKeyFromHexPrivateKey hexPrivateKey =
+    Native.Neo.getBinaryPrivateKeyFromHexPrivateKey hexPrivateKey
+
+
+{-| getHexPrivateKeyFromBinaryPrivateKey
+
+convert binary private key to hex private key
+
+-}
+getHexPrivateKeyFromBinaryPrivateKey : BinaryPrivateKey -> Result String HexPrivateKey
+getHexPrivateKeyFromBinaryPrivateKey binaryPrivateKey =
+    Native.Neo.getHexPrivateKeyFromBinaryPrivateKey binaryPrivateKey
+
+
+{-| getBinaryPublicKeyFromHexPublicKey
+
+convert hex public key to binary public key
+
+-}
+getBinaryPublicKeyFromHexPublicKey : HexPublicKey -> Result String BinaryPublicKey
+getBinaryPublicKeyFromHexPublicKey hexPublicKey =
+    Native.Neo.getBinaryPublicKeyFromHexPublicKey hexPublicKey
+
+
+{-| getHexPublicKeyFromBinaryPublicKey
+
+convert binary public key to hex public key
+
+-}
+getHexPublicKeyFromBinaryPublicKey : BinaryPublicKey -> Result String HexPublicKey
+getHexPublicKeyFromBinaryPublicKey binaryPublicKey =
+    Native.Neo.getHexPublicKeyFromBinaryPublicKey binaryPublicKey
