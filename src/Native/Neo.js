@@ -26143,7 +26143,11 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     };
 
     var createSignatureScript = function(binaryPublicKey) {
-        return "21" + binaryPublicKey.toString('hex') + "ac";
+        console.log("sig internal 1: ", binaryPublicKey);
+        console.log("sig internal 2: ", binaryPublicKey.toString('hex'));
+        var r = "21" + binaryPublicKey.toString('hex') + "ac";
+        console.log("sig interal 3: ", r);
+        return r;
     };
 
     var toAddress = function(programHash){
@@ -26254,6 +26258,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var publicKeyHash = getHash(hexPublicKey);
 
+            console.log("GETACCOUNTFROMHEXPRIVATEKEY");
             var script = createSignatureScript(hexPublicKey);
 
             var programHash = getHash(script);
@@ -26302,6 +26307,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var publicKeyHash = getHash(hexPublicKey);
 
+            console.log("GETACCOUNTFROMBINARYPUBLICKEY");
             var script = createSignatureScript(encodedPublicKey);
 
             var programHash = getHash(script);
@@ -26341,6 +26347,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var publicKeyHash = getHash(hexPublicKey);
 
+            console.log("GETACCOUNTFROMHEXPUBLICKEY");
             var script = createSignatureScript(encodedPublicKey);
 
             var programHash = getHash(script);
@@ -26450,34 +26457,47 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     };
 
 
-    var getTransferData = function (coinData, binaryPublicKey, toAddress, amount) {
+    var getTransferData = function (coinData, binaryPublicKey1, toAddress, amount) {
         try {
 
-            if (!isValidBinaryPublicKeyInternal(_elm_lang$core$Native_List.toArray(binaryPublicKey))) {
-                return _elm_lang$core$Result$Err("Error the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " is not a valid BinaryPublicKey");
+            console.log("I WAS CALLED");
+
+            var binaryPublicKey = _elm_lang$core$Native_List.toArray(binaryPublicKey1);
+
+            if (!isValidBinaryPublicKeyInternal(binaryPublicKey)) {
+                return _elm_lang$core$Result$Err("Error the supplied BinaryPublicKey: " + binaryPublicKey + " is not a valid BinaryPublicKey");
             }
 
             if(!isValidAddress(toAddress)) {
                 return _elm_lang$core$Result$Err("Error the supplied Address: " + toAddress + " is not a valid NEO Address");
             }
 
-            var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
+            var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(binaryPublicKey));
 
             var ProgramHash = all_crypto.base58.decode(toAddress);
-            var ProgramHexString = all_crypto.cryptojs.enc.Hex.parse(ab2hexstring(ProgramHash.slice(0, 21)));
-            var ProgramSha256 = all_crypto.cryptojs.SHA256(ProgramHexString);
-            var ProgramSha256_2 = all_crypto.cryptojs.SHA256(ProgramSha256);
-            var ProgramSha256Buffer = hexstring2ab(ProgramSha256_2.toString());
-
-            if (ab2hexstring(ProgramSha256Buffer.slice(0, 4)) !== ab2hexstring(ProgramHash.slice(21, 25))) {
-                //address verify failed.
-                return -1;
-            }
+            // var ProgramHexString = all_crypto.cryptojs.enc.Hex.parse(ab2hexstring(ProgramHash.slice(0, 21)));
+            // var ProgramSha256 = all_crypto.cryptojs.SHA256(ProgramHexString);
+            // var ProgramSha256_2 = all_crypto.cryptojs.SHA256(ProgramSha256);
+            // var ProgramSha256Buffer = hexstring2ab(ProgramSha256_2.toString());
+            //
+            // if (ab2hexstring(ProgramSha256Buffer.slice(0, 4)) !== ab2hexstring(ProgramHash.slice(21, 25))) {
+            //     //address verify failed.
+            //     return -1;
+            // }
 
             ProgramHash = ProgramHash.slice(1, 21);
 
-            var signatureScript = createSignatureScript(encodedPublicKey);
+            console.log("before sig: ", binaryPublicKey);
+            console.log("GETTRANSFERDATA");
+
+            var signatureScript = createSignatureScript(ab2hexstring(binaryPublicKey));
             var myProgramHash = getHash(signatureScript);
+
+            console.log("myProgramHash: ", myProgramHash);
+            console.log("public before encodedPublicKey: ", binaryPublicKey);
+            console.log("encodedPublicKey: ", encodedPublicKey);
+            console.log("signatureScript: ", signatureScript);
+
 
             // INPUT CONSTRUCT
             var inputData = getInputData(coinData, amount);
@@ -26603,20 +26623,25 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
-    var getContractData = function (transactionData, signatureData, binaryPublicKey) {
+    var getContractData = function (transactionData, signatureData, binaryPublicKey1) {
         try {
 
-            if (!isValidBinaryPublicKeyInternal(_elm_lang$core$Native_List.toArray(binaryPublicKey))) {
-                return _elm_lang$core$Result$Err("Error the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " is not a valid BinaryPublicKey");
+            var binaryPublicKey = _elm_lang$core$Native_List.toArray(binaryPublicKey1);
+
+            if (!isValidBinaryPublicKeyInternal(binaryPublicKey)) {
+                return _elm_lang$core$Result$Err("Error the supplied BinaryPublicKey: " + binaryPublicKey + " is not a valid BinaryPublicKey");
             }
 
-            var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
+            var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(binaryPublicKey));
 
             if (!verifyPublicKeyEncoded(encodedPublicKey)) {
-                return _elm_lang$core$Result$Err("Error the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " because it is not a valid BinaryPublicKey");
+                return _elm_lang$core$Result$Err("Error the supplied BinaryPublicKey: " + binaryPublicKey + " because it is not a valid BinaryPublicKey");
             }
 
-            var signatureScript = createSignatureScript(encodedPublicKey);
+            console.log("CONTRACT DATA");
+            console.log("binaryPublicKey CONTRACT: ", ab2hexstring(binaryPublicKey));
+
+            var signatureScript = createSignatureScript(ab2hexstring(binaryPublicKey));
 
             // sign num
             var data = transactionData + "01";
