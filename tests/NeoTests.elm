@@ -10,13 +10,15 @@ import Neo exposing (..)
 
 main : Test.Runner.Html.TestProgram
 main =
-    [ privateAndPublicKeys
-    , accounts
-    , transactions
-    , signatures
-    , contracts
-    , keyConversions
-    , formatValidations
+    [
+     privateAndPublicKeys
+          , accounts
+          , transactions
+          , signatures
+          , contracts
+          , keyConversions
+          , formatValidations
+          , fullNeoTest
     ]
         |> concat
         |> Test.Runner.Html.run
@@ -40,7 +42,6 @@ privateAndPublicKeys =
         , it "should get a hex private key from a wif" (returnsExpectedKey hexPrivateKey (getHexPrivateKeyFromWIF wif))
         , it "should return an error given an invalid wif (getHexPrivateKeyFromWIF)" (failsExpectedKey "Error the supplied WIF: not-a-valid-wif is not encoded as base58" (getHexPrivateKeyFromWIF "not-a-valid-wif"))
         ]
-
 
 returnsExpectedKey : a -> Result String a -> Expectation
 returnsExpectedKey expectedKey maybeKey =
@@ -200,6 +201,97 @@ formatValidations =
         , it "should return true for a valid wif" (Expect.equal (isValidWif wif) True)
         , it "should return false for an invalid wif" (Expect.equal (isValidWif "not-a-valid-wif") False)
         ]
+
+
+fullNeoTest : Test
+fullNeoTest =
+    let
+        expectedNeoPayload =
+            "80000001d54314e7f315e610bcf9331c9b4b809874e332733d400668334df66602f1368d0100029b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc500e1f5050000000050aaa1301d0e0ed762efb7595e547f368c6d0d719b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5007ddaac00000000f7901c8cccd69fc54be2efc41e5fd546cf79d969014140a4ce92550df00dd67631abb82a5399204f4b586904d091096ab9627c789f15bb61b1bbeab48130ae7c69cd510a4feb8dd285fa47facffc0043484ede0fda742523210234f1a4f25318d80ce8aa81449924aff029f4262abd02d056b692d9f8e90fb835ac"
+    in
+        describe "Neo full test"
+            [ it "should make an identical payload to the Neon client" (Expect.equal (createPayloadFor "Neo") expectedNeoPayload) ]
+
+
+type alias Balance =
+    { balance : Float, unspent : List Transaction }
+
+
+type alias BalanceInfo =
+    { gas : Balance, neo : Balance, address : String, net : String }
+
+
+createPayloadFor : AssetName -> ContractData
+createPayloadFor assetName =
+    let
+        toAddress =
+            "AP8Q7Q9uzwaDnKc3GooERipJknzBLQSTy5"
+
+        gasBalance =
+            Balance 0 []
+
+        neoBalance =
+            Balance 41
+                [
+                 Transaction 1 "6374a38584e7b5487ffaddab36f106942904081016cdaa4d77539af5c289c977" 1
+                ,Transaction 1 "74b4630507f381fbf310e2f3699be7228a24052dc00f0ca844e453fc370c8352" 1
+                ,Transaction 0 "6253cbb1eba98ffea217e59f51e60eba86f44f902939f3dab8fda94f5694a16d" 1
+                ,Transaction 0 "4c5d9697d7846bbcc2dacf9dfefb16f5e918ceec7810ffd4a2618503edc121d7" 1
+                ,Transaction 0 "0c174aab04c2dd4e61e9c6498fcebeffb91980652c9668b92e07805a20c4dd71" 2
+                ,Transaction 0 "75abcda83a1dabf30e16e3732ebee94704b9806919187801e2011fd96597e433" 2
+                ,Transaction 0 "86191f8130b3c052850a291e0b8f4141e7afda9aab394be851e0147392ac85fe" 2
+                ,Transaction 1 "8d36f10266f64d336806403d7332e37498804b9b1c33f9bc10e615f3e71443d5" 30
+                ,Transaction 0 "c40b1afbd5d9818ad185e2f22dc406e552bc82b2074e7dc92d12175a43b8bdcb" 1
+                ]
+
+        getAccountAndKey : HexPrivateKey -> Result String ( Address, BinaryPublicKey, BinaryPrivateKey )
+        getAccountAndKey hexPrivateKey_ =
+            Result.map (\account -> ( account.address, account.binaryPublicKey, account.binaryPrivateKey )) (Neo.getAccountFromHexPrivateKey hexPrivateKey_)
+
+        getTransactionData : ( Address, BinaryPublicKey, BinaryPrivateKey ) -> Result String ( Address, BinaryPublicKey, BinaryPrivateKey, TransactionData )
+        getTransactionData ( address_, binaryPublicKey_, binaryPrivateKey_ ) =
+            let
+                balanceInfo =
+                    BalanceInfo gasBalance neoBalance address_ "TestNet"
+
+                coinData =
+                    CoinData neoAssetId balanceInfo.neo.unspent balanceInfo.neo.balance assetName
+
+                _ = Debug.log "coindata: " coinData
+            in
+                Result.map (\transactionData_ -> ( address_, binaryPublicKey_, binaryPrivateKey_, transactionData_ )) (Neo.getTransferData coinData binaryPublicKey_ toAddress 1)
+
+        getSignatureData : ( Address, BinaryPublicKey, BinaryPrivateKey, TransactionData ) -> Result String ( Address, BinaryPublicKey, BinaryPrivateKey, TransactionData, SignatureData )
+        getSignatureData ( address_, binaryPublicKey_, binaryPrivateKey_, transactionData_ ) =
+            let
+              _ = Debug.log "sig" (Neo.getSignatureData transactionData_ binaryPrivateKey_)
+              _ = Debug.log "txd" (transactionData_)
+              _ = Debug.log "pkb" (Neo.getHexPrivateKeyFromBinaryPrivateKey binaryPrivateKey_)
+            in
+            Result.map (\signatureData_ -> ( address_, binaryPublicKey_, binaryPrivateKey_, transactionData_, signatureData_ )) (Neo.getSignatureData transactionData_ binaryPrivateKey_)
+
+        getContractData : ( Address, BinaryPublicKey, BinaryPrivateKey, TransactionData, SignatureData ) -> Result String ContractData
+        getContractData ( address_, binaryPublicKey_, binaryPrivateKey_, transactionData_, signatureData_ ) =
+            Neo.getContractData transactionData_ signatureData_ binaryPublicKey_
+
+
+        result =
+            getAccountAndKey "03dfb7d63595106f8936d0da98853e37e3ddf2c4fe2df9b717df936cad985395"
+                |> Result.andThen getTransactionData
+                |> Result.andThen getSignatureData
+                |> Result.andThen getContractData
+
+        _ =
+            Debug.log "r: " result
+    in
+        case result of
+            Ok data ->
+                data
+
+            Err error ->
+                error
+
+
 
 
 returnsExpectedContractData : ContractData -> Result String ContractData -> Expectation
