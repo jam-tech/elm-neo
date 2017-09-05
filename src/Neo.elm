@@ -48,6 +48,8 @@ module Neo
         , getHexPrivateKeyFromBinaryPrivateKey
         , getBinaryPublicKeyFromHexPublicKey
         , getHexPublicKeyFromBinaryPublicKey
+        , encrypt
+        , decrypt
         )
 
 {-| Elm Neo provides tools for the neo wallet and crypto.
@@ -56,7 +58,8 @@ module Neo
       PublicKeyHash, ProgramHash, Address, Account, TransactionData, getHexPrivateKeyFromWIF, getAccountFromBinaryPrivateKey, getAccountFromHexPrivateKey, getAccountFromBinaryPublicKey,
       getAccountFromHexPublicKey, Asset, AssetName, CoinData, Transactions, Transaction, TransactionId, neoAssetId, gasAssetId, AssetId, getTransferData,
       SignatureData, getSignatureData, ContractData, getContractData, getBinaryPublicKeyFromHexPrivateKey,getBinaryPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromHexPrivateKey,
-      isValidBinaryPublicKey, isValidHexPublicKey, isValidAddress, isValidHexPrivateKey, isValidBinaryPrivateKey, isValidWif, getBinaryPrivateKeyFromHexPrivateKey, getHexPrivateKeyFromBinaryPrivateKey, getBinaryPublicKeyFromHexPublicKey, getHexPublicKeyFromBinaryPublicKey
+      isValidBinaryPublicKey, isValidHexPublicKey, isValidAddress, isValidHexPrivateKey, isValidBinaryPrivateKey, isValidWif, getBinaryPrivateKeyFromHexPrivateKey, getHexPrivateKeyFromBinaryPrivateKey, getBinaryPublicKeyFromHexPublicKey, getHexPublicKeyFromBinaryPublicKey,
+      encrypt, decrypt
 
 
 -}
@@ -539,3 +542,22 @@ convert binary public key to hex public key
 getHexPublicKeyFromBinaryPublicKey : BinaryPublicKey -> Result String HexPublicKey
 getHexPublicKeyFromBinaryPublicKey binaryPublicKey =
     Native.Neo.getHexPublicKeyFromBinaryPublicKey binaryPublicKey
+
+
+{-| encrypt
+
+encrypt a string
+
+-}
+encrypt : String -> String -> Result String String
+encrypt value password =
+     Native.Neo.encryptIt value password
+
+{-| decrypt
+
+decrypt a string
+
+-}
+decrypt : String -> String -> Result String String
+decrypt encrypted password =
+     Native.Neo.decryptIt encrypted password

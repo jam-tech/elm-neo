@@ -18,6 +18,7 @@ main =
     , keyConversions
     , formatValidations
     , fullNeoTest
+    , cipherTests
     ]
         |> concat
         |> Test.Runner.Html.run
@@ -201,6 +202,29 @@ formatValidations =
         , it "should return true for a valid wif" (Expect.equal (isValidWif wif) True)
         , it "should return false for an invalid wif" (Expect.equal (isValidWif "not-a-valid-wif") False)
         ]
+
+
+cipherTests : Test
+cipherTests =
+    describe "Cipher tests"
+        [ it "should encrypt a secret with a password" (Expect.equal (String.length encryptedString) 44)
+        , it "should decrypt a secret with a password" (returnsExpectedCipher "a secret" (decrypt encryptedString "password"))
+        ]
+
+
+returnsExpectedCipher : String -> Result String String -> Expectation
+returnsExpectedCipher expectedData maybeData =
+    case maybeData of
+        Ok data ->
+            Expect.equal data expectedData
+
+        Err error ->
+            Expect.fail error
+
+
+encryptedString : String
+encryptedString =
+    Result.withDefault "error" (encrypt "a secret" "password")
 
 
 fullNeoTest : Test

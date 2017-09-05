@@ -26143,10 +26143,7 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     };
 
     var createSignatureScript = function(binaryPublicKey) {
-        console.log("sig internal 1: ", binaryPublicKey);
-        console.log("sig internal 2: ", binaryPublicKey.toString('hex'));
         var r = "21" + binaryPublicKey.toString('hex') + "ac";
-        console.log("sig interal 3: ", r);
         return r;
     };
 
@@ -26258,7 +26255,6 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var publicKeyHash = getHash(hexPublicKey);
 
-            console.log("GETACCOUNTFROMHEXPRIVATEKEY");
             var script = createSignatureScript(hexPublicKey);
 
             var programHash = getHash(script);
@@ -26307,7 +26303,6 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var publicKeyHash = getHash(hexPublicKey);
 
-            console.log("GETACCOUNTFROMBINARYPUBLICKEY");
             var script = createSignatureScript(encodedPublicKey);
 
             var programHash = getHash(script);
@@ -26347,7 +26342,6 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             var publicKeyHash = getHash(hexPublicKey);
 
-            console.log("GETACCOUNTFROMHEXPUBLICKEY");
             var script = createSignatureScript(encodedPublicKey);
 
             var programHash = getHash(script);
@@ -26460,8 +26454,6 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
     var getTransferData = function (coinData, binaryPublicKey1, toAddress, amount) {
         try {
 
-            console.log("I WAS CALLED");
-
             var binaryPublicKey = _elm_lang$core$Native_List.toArray(binaryPublicKey1);
 
             if (!isValidBinaryPublicKeyInternal(binaryPublicKey)) {
@@ -26487,16 +26479,8 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
             ProgramHash = ProgramHash.slice(1, 21);
 
-            console.log("before sig: ", binaryPublicKey);
-            console.log("GETTRANSFERDATA");
-
             var signatureScript = createSignatureScript(ab2hexstring(binaryPublicKey));
             var myProgramHash = getHash(signatureScript);
-
-            console.log("myProgramHash: ", myProgramHash);
-            console.log("public before encodedPublicKey: ", binaryPublicKey);
-            console.log("encodedPublicKey: ", encodedPublicKey);
-            console.log("signatureScript: ", signatureScript);
 
 
             // INPUT CONSTRUCT
@@ -26638,9 +26622,6 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
                 return _elm_lang$core$Result$Err("Error the supplied BinaryPublicKey: " + binaryPublicKey + " because it is not a valid BinaryPublicKey");
             }
 
-            console.log("CONTRACT DATA");
-            console.log("binaryPublicKey CONTRACT: ", ab2hexstring(binaryPublicKey));
-
             var signatureScript = createSignatureScript(ab2hexstring(binaryPublicKey));
 
             // sign num
@@ -26659,6 +26640,22 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
 
         } catch (e) {
             return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
+        }
+    };
+
+    var encryptIt = function(plainText, password) {
+        try {
+            return _elm_lang$core$Result$Ok(all_crypto.cryptojs.AES.encrypt(plainText, password).toString());
+        } catch (e) {
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: ");
+        }
+    };
+
+    var decryptIt = function(encrypted, password) {
+        try {
+            return _elm_lang$core$Result$Ok(all_crypto.cryptojs.enc.Utf8.stringify(all_crypto.cryptojs.AES.decrypt(encrypted, password)));
+        } catch (e) {
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: ");
         }
     };
 
@@ -26689,7 +26686,9 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         getBinaryPrivateKeyFromHexPrivateKey   : getBinaryPrivateKeyFromHexPrivateKey,
         getHexPrivateKeyFromBinaryPrivateKey   : getHexPrivateKeyFromBinaryPrivateKey,
         getBinaryPublicKeyFromHexPublicKey     : getBinaryPublicKeyFromHexPublicKey,
-        getHexPublicKeyFromBinaryPublicKey     : getHexPublicKeyFromBinaryPublicKey
+        getHexPublicKeyFromBinaryPublicKey     : getHexPublicKeyFromBinaryPublicKey,
+        encryptIt                                : F2(encryptIt),
+        decryptIt                                : F2(decryptIt)
     }
 
 }());
