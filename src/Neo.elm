@@ -50,6 +50,8 @@ module Neo
         , getHexPublicKeyFromBinaryPublicKey
         , encrypt
         , decrypt
+        , encryptAsJson
+        , decryptAsJson
         )
 
 {-| Elm Neo provides tools for the neo wallet and crypto.
@@ -59,7 +61,7 @@ module Neo
       getAccountFromHexPublicKey, Asset, AssetName, CoinData, Transactions, Transaction, TransactionId, neoAssetId, gasAssetId, AssetId, getTransferData,
       SignatureData, getSignatureData, ContractData, getContractData, getBinaryPublicKeyFromHexPrivateKey,getBinaryPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromBinaryPrivateKey,getHexPublicKeyFromHexPrivateKey,
       isValidBinaryPublicKey, isValidHexPublicKey, isValidAddress, isValidHexPrivateKey, isValidBinaryPrivateKey, isValidWif, getBinaryPrivateKeyFromHexPrivateKey, getHexPrivateKeyFromBinaryPrivateKey, getBinaryPublicKeyFromHexPublicKey, getHexPublicKeyFromBinaryPublicKey,
-      encrypt, decrypt
+      encrypt, decrypt, encryptAsJson, decryptAsJson
 
 
 -}
@@ -551,7 +553,8 @@ encrypt a string
 -}
 encrypt : String -> String -> Result String String
 encrypt value password =
-     Native.Neo.encryptIt value password
+    Native.Neo.encryptIt value password
+
 
 {-| decrypt
 
@@ -560,4 +563,24 @@ decrypt a string
 -}
 decrypt : String -> String -> Result String String
 decrypt encrypted password =
-     Native.Neo.decryptIt encrypted password
+    Native.Neo.decryptIt encrypted password
+
+
+{-| encryptAsJson
+
+encryptAsJson a string
+
+-}
+encryptAsJson : String -> String -> Result String String
+encryptAsJson value password =
+    Native.Neo.encryptAsJson value password
+
+
+{-| decryptAsJson
+
+decryptAsJson a string
+
+-}
+decryptAsJson : String -> String -> Result String String
+decryptAsJson encrypted password =
+    Native.Neo.decryptAsJson encrypted password

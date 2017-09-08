@@ -26659,6 +26659,55 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         }
     };
 
+    var JsonFormatter = {
+        stringify: function (cipherParams) {
+            // create json object with ciphertext
+            var jsonObj = {ct: cipherParams.ciphertext.toString(all_crypto.cryptojs.enc.Base64)};
+
+            // optionally add iv and salt
+            if (cipherParams.iv) {
+                jsonObj.iv = cipherParams.iv.toString();
+            }
+            if (cipherParams.salt) {
+                jsonObj.s = cipherParams.salt.toString();
+            }
+            // stringify json object
+            return JSON.stringify(jsonObj);
+        },
+        parse: function (jsonStr) {
+            // parse json string
+            var jsonObj = JSON.parse(jsonStr);
+            // extract ciphertext from json object, and create cipher params object
+            var cipherParams = all_crypto.cryptojs.lib.CipherParams.create({ciphertext: all_crypto.cryptojs.enc.Base64.parse(jsonObj.ct)});
+            // optionally extract iv and salt
+            if (jsonObj.iv) {
+                cipherParams.iv = all_crypto.cryptojs.enc.Hex.parse(jsonObj.iv)
+            }
+            if (jsonObj.s) {
+                cipherParams.salt = all_crypto.cryptojs.enc.Hex.parse(jsonObj.s)
+            }
+            return cipherParams;
+        }
+    };
+
+    var encryptAsJson = function (plainText, password) {
+        try {
+            var encrypted = all_crypto.cryptojs.AES.encrypt(plainText, password, {format: JsonFormatter});
+            return _elm_lang$core$Result$Ok(encrypted.toString());
+        } catch (e) {
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: ");
+        }
+    };
+
+    var decryptAsJson = function (encrypted, password) {
+        try {
+            var decrypted = all_crypto.cryptojs.AES.decrypt(encrypted, password, {format: JsonFormatter});
+            return _elm_lang$core$Result$Ok(decrypted.toString(all_crypto.cryptojs.enc.Utf8));
+        } catch (e) {
+            return _elm_lang$core$Result$Err("Error something went wrong - here is the error: ");
+        }
+    };
+
     return {
         generateBinaryPrivateKey               : generateBinaryPrivateKey,
         generateHexPrivateKey                  : generateHexPrivateKey,
@@ -26687,8 +26736,10 @@ var _kingsleyh$elm_neo$Native_Neo = (function () {
         getHexPrivateKeyFromBinaryPrivateKey   : getHexPrivateKeyFromBinaryPrivateKey,
         getBinaryPublicKeyFromHexPublicKey     : getBinaryPublicKeyFromHexPublicKey,
         getHexPublicKeyFromBinaryPublicKey     : getHexPublicKeyFromBinaryPublicKey,
-        encryptIt                                : F2(encryptIt),
-        decryptIt                                : F2(decryptIt)
+        encryptIt                              : F2(encryptIt),
+        decryptIt                              : F2(decryptIt),
+        encryptAsJson                          : F2(encryptAsJson),
+        decryptAsJson                          : F2(decryptAsJson)
     }
 
 }());

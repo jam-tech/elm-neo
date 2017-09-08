@@ -14,6 +14,7 @@ There are 6 areas:
 * Signatures
 * Contracts
 * Format validations
+* Ciphers
 
 ### Private and public keys
 
@@ -220,13 +221,29 @@ isValidWif wif
 
 ```
 
+### Ciphers
+
+* all the functions here return Result String String
+
+```
+encrypt "a secret" "passphrase"
+
+decrypt "encrypted string" "passphrase"
+
+encryptAsJson "a secret" "passphrase"
+-- {"ci":"fdfasfsa","vi":"dfasdfas","s":"dfafasas"}
+
+decryptAsJson "json string" "passphrase" 
+
+```
+
 ## Install
 
 you must use [elm-github-install](https://github.com/gdotdesign/elm-github-install) and include in your elm-package.json as follows:
 
 ```
 "dependencies": {
-  "kingsleyh/elm-neo": "1.0.7 <= v < 2.0.0"
+  "kingsleyh/elm-neo": "1.0.8 <= v < 2.0.0"
 }
 ```
 

@@ -209,6 +209,8 @@ cipherTests =
     describe "Cipher tests"
         [ it "should encrypt a secret with a password" (Expect.equal (String.length encryptedString) 44)
         , it "should decrypt a secret with a password" (returnsExpectedCipher "a secret" (decrypt encryptedString "password"))
+        , it "should encrypt as json a secret with a password" (Expect.equal (String.startsWith "{" encryptedJsonString) True)
+        , it "should decrypt as json a secret with a password" (returnsExpectedCipher "a secret" (decryptAsJson encryptedJsonString "password"))
         ]
 
 
@@ -225,6 +227,11 @@ returnsExpectedCipher expectedData maybeData =
 encryptedString : String
 encryptedString =
     Result.withDefault "error" (encrypt "a secret" "password")
+
+
+encryptedJsonString : String
+encryptedJsonString =
+    Result.withDefault "error" (encryptAsJson "a secret" "password")
 
 
 fullNeoTest : Test
@@ -271,28 +278,12 @@ createPayloadFor assetName =
 
                 coinData =
                     CoinData neoAssetId balanceInfo.neo.unspent balanceInfo.neo.balance assetName
-
-                _ =
-                    Debug.log "hex pub key: " (Neo.getHexPublicKeyFromBinaryPublicKey binaryPublicKey_)
-
-                _ =
-                    Debug.log "coindata: " coinData
             in
                 Result.map (\transactionData_ -> ( address_, binaryPublicKey_, binaryPrivateKey_, transactionData_ )) (Neo.getTransferData coinData binaryPublicKey_ toAddress 1)
 
         getTheSignatureData : ( Address, BinaryPublicKey, BinaryPrivateKey, TransactionData ) -> Result String ( Address, BinaryPublicKey, BinaryPrivateKey, TransactionData, SignatureData )
         getTheSignatureData ( address_, binaryPublicKey_, binaryPrivateKey_, transactionData_ ) =
-            let
-                _ =
-                    Debug.log "sig" (Neo.getSignatureData transactionData_ binaryPrivateKey_)
-
-                _ =
-                    Debug.log "txd" (transactionData_)
-
-                _ =
-                    Debug.log "pkb" (Neo.getHexPrivateKeyFromBinaryPrivateKey binaryPrivateKey_)
-            in
-                Result.map (\signatureData_ -> ( address_, binaryPublicKey_, binaryPrivateKey_, transactionData_, signatureData_ )) (Neo.getSignatureData transactionData_ binaryPrivateKey_)
+            Result.map (\signatureData_ -> ( address_, binaryPublicKey_, binaryPrivateKey_, transactionData_, signatureData_ )) (Neo.getSignatureData transactionData_ binaryPrivateKey_)
 
         getTheContractData : ( Address, BinaryPublicKey, BinaryPrivateKey, TransactionData, SignatureData ) -> Result String ContractData
         getTheContractData ( address_, binaryPublicKey_, binaryPrivateKey_, transactionData_, signatureData_ ) =
@@ -303,9 +294,6 @@ createPayloadFor assetName =
                 |> Result.andThen getTransactionData
                 |> Result.andThen getTheSignatureData
                 |> Result.andThen getTheContractData
-
-        _ =
-            Debug.log "r: " result
     in
         case result of
             Ok data ->
