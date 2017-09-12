@@ -1,7 +1,7 @@
 {
   "version": "4.0.0",
   "summary": "Test Suites",
-  "repository": "https://github.com/kingsleyh/elm-neo.git",
+  "repository": "https://github.com/jam-tech/elm-neo.git",
   "license": "BSD-3-Clause",
   "source-directories": [
     ".",

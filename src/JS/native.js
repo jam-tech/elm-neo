@@ -23,7 +23,7 @@ var hexstring2ab = function (str) {
     return result;
 };
 
-var _kingsleyh$elm_neo$Native_Neo = (function () {
+var _jam_tech$elm_neo$Native_Neo = (function () {
 
     var generateBinaryPrivateKey = _elm_lang$core$Native_Scheduler.nativeBinding(function (callback) {
         callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_List.fromArray(all_crypto.secureRandom.randomUint8Array(32))));
