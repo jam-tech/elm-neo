@@ -243,7 +243,7 @@ you must use [elm-github-install](https://github.com/gdotdesign/elm-github-insta
 
 ```
 "dependencies": {
-  "kingsleyh/elm-neo": "1.0.8 <= v < 2.0.0"
+  "kingsleyh/elm-neo": "1.0.9 <= v < 2.0.0"
 }
 ```
 
