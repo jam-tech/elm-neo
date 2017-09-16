@@ -10,8 +10,9 @@ import Neo exposing (..)
 
 main : Test.Runner.Html.TestProgram
 main =
-    [ privateAndPublicKeys
+    [privateAndPublicKeys
     , accounts
+    , accountsExtra
     , transactions
     , signatures
     , contracts
@@ -98,6 +99,23 @@ accounts =
         , it "should return an account given a hex public key" (returnsExpectedAccount publicAccount (getAccountFromHexPublicKey hexPublicKey))
         , it "should return an error given an invalid hex public key" (failsExpectedAccount "Error could not get account information from the supplied HexPublicKey: not-a-hex-public-key because it is not a valid HexPublicKey" (getAccountFromHexPublicKey "not-a-hex-public-key"))
         ]
+
+
+accountsExtra : Test
+accountsExtra =
+  describe "Account info extra tests"
+   [ it "should correctly retun an account for the given hex public key" (returnsExpectedAccount expectedAccount1 (getAccountFromHexPublicKey "03f0f25d710def495fb48b46456039b07246871cbd2dc2843316aa185243cec4d6"))
+   , it "should correctly retun an account for the given binary public key" (returnsExpectedAccount expectedAccount1 (getAccountFromBinaryPublicKey [3,240,242,93,113,13,239,73,95,180,139,70,69,96,57,176,114,70,135,28,189,45,194,132,51,22,170,24,82,67,206,196,214]))]
+
+expectedAccount1 : Account
+expectedAccount1 =
+ { binaryPrivateKey = []
+ , hexPrivateKey = ""
+ , binaryPublicKey = [3,240,242,93,113,13,239,73,95,180,139,70,69,96,57,176,114,70,135,28,189,45,194,132,51,22,170,24,82,67,206,196,214]
+ , hexPublicKey = "03f0f25d710def495fb48b46456039b07246871cbd2dc2843316aa185243cec4d6"
+ , publicKeyHash = "dc4c56397ec23e464ab31012c17d8f4c027390ff"
+ , programHash = "20d158d8849a2c6ab4b8097b477aa45e59f52534"
+ , address = "AJmQ4KpEVnUyDrpAtKLaXrgYjyHdjdJcMJ" }
 
 
 returnsExpectedAccount : Account -> Result String Account -> Expectation

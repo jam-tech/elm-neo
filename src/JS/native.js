@@ -414,26 +414,18 @@ var _jam_tech$elm_neo$Native_Neo = (function () {
                 return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " because it is not a valid BinaryPublicKey");
             }
 
-            var encodedPublicKey = getPublicKeyEncoded(ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey)));
-
-            if (!verifyPublicKeyEncoded(encodedPublicKey)) {
-                return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPublicKey: " + _elm_lang$core$Native_List.toArray(binaryPublicKey) + " because it is not a valid BinaryPublicKey");
-            }
-
-            var binaryPrivateKey = _elm_lang$core$Native_List.fromArray([]);
-
             var hexPublicKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey));
 
             var publicKeyHash = getHash(hexPublicKey);
 
-            var script = createSignatureScript(encodedPublicKey);
+            var script = createSignatureScript(hexPublicKey);
 
             var programHash = getHash(script);
 
             var address = toAddress(hexstring2ab(programHash.toString()));
 
             return _elm_lang$core$Result$Ok({
-                binaryPrivateKey: binaryPrivateKey
+                binaryPrivateKey: _elm_lang$core$Native_List.fromArray([])
                 , hexPrivateKey: ""
                 , binaryPublicKey: binaryPublicKey
                 , hexPublicKey: hexPublicKey
@@ -455,24 +447,16 @@ var _jam_tech$elm_neo$Native_Neo = (function () {
                 return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPublicKey: " + hexPublicKey + " because it is not a valid HexPublicKey");
             }
 
-            var encodedPublicKey = getPublicKeyEncoded(hexPublicKey);
-
-            if (!verifyPublicKeyEncoded(encodedPublicKey)) {
-                return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPublicKey: " + hexPublicKey + " because it is not a valid HexPublicKey");
-            }
-
-            var binaryPrivateKey = _elm_lang$core$Native_List.fromArray([]);
-
             var publicKeyHash = getHash(hexPublicKey);
 
-            var script = createSignatureScript(encodedPublicKey);
+            var script = createSignatureScript(hexPublicKey);
 
             var programHash = getHash(script);
 
             var address = toAddress(hexstring2ab(programHash.toString()));
 
             return _elm_lang$core$Result$Ok({
-                binaryPrivateKey: binaryPrivateKey
+                binaryPrivateKey: _elm_lang$core$Native_List.fromArray([])
                 , hexPrivateKey: ""
                 , binaryPublicKey: _elm_lang$core$Native_List.fromArray(binaryPublicKey)
                 , hexPublicKey: hexPublicKey
