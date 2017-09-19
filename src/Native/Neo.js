@@ -25913,10 +25913,7 @@ var _jam_tech$elm_neo$Native_Neo = (function () {
     var getWIFFromBinaryPrivateKey = function (binaryPrivateKey) {
         try {
             var hexPrivateKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPrivateKey));
-            if(!isValidHexPrivateKey(hexPrivateKey)){
-                return _elm_lang$core$Result$Err("Error could not get account information from the supplied BinaryPrivateKey: " + _elm_lang$core$Native_List.toArray(binaryPrivateKey) + " because it is not a valid BinaryPrivateKey");
-            }
-            return _elm_lang$core$Result$Ok(all_crypto.wif.encode(128, new all_crypto.buffer.Buffer(hexPrivateKey, 'hex'), true));
+            getWIFFromHexPrivateKey(hexPrivateKey);
         } catch (e) {
             return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
@@ -25927,10 +25924,14 @@ var _jam_tech$elm_neo$Native_Neo = (function () {
             if(!isValidHexPrivateKey(hexPrivateKey)){
                 return _elm_lang$core$Result$Err("Error could not get account information from the supplied HexPrivateKey: " + hexPrivateKey + " because it is not a valid HexPrivateKey");
             }
-            return _elm_lang$core$Result$Ok(all_crypto.wif.encode(128, new all_crypto.buffer.Buffer(hexPrivateKey, 'hex'), true));
+            return _elm_lang$core$Result$Ok(getWIFFromHexPrivateKeyInternal(hexPrivateKey));
         } catch (e) {
             return _elm_lang$core$Result$Err("Error something went wrong - here is the error: " + e);
         }
+    };
+
+    var getWIFFromHexPrivateKeyInternal = function (hexPrivateKey) {
+        return all_crypto.wif.encode(128, new all_crypto.buffer.Buffer(hexPrivateKey, 'hex'), true);
     };
 
     var getBinaryPrivateKeyFromWIF = function (wif) {
@@ -26249,6 +26250,8 @@ var _jam_tech$elm_neo$Native_Neo = (function () {
 
             var binaryPrivateKey = _elm_lang$core$Native_List.fromArray(hexstring2ab(hexPrivateKey));
 
+            var wifPrivateKey = getWIFFromHexPrivateKeyInternal(hexPrivateKey);
+
             var binaryPublicKey = getBinaryPublicKeyFromHexPrivateKeyInternal(hexPrivateKey, true);
 
             var hexPublicKey = ab2hexstring(_elm_lang$core$Native_List.toArray(binaryPublicKey));
@@ -26264,6 +26267,7 @@ var _jam_tech$elm_neo$Native_Neo = (function () {
             return _elm_lang$core$Result$Ok({
                 binaryPrivateKey: binaryPrivateKey
                 , hexPrivateKey: hexPrivateKey
+                , wifPrivateKey: wifPrivateKey
                 , binaryPublicKey: binaryPublicKey
                 , hexPublicKey: hexPublicKey
                 , publicKeyHash: publicKeyHash
@@ -26304,6 +26308,7 @@ var _jam_tech$elm_neo$Native_Neo = (function () {
             return _elm_lang$core$Result$Ok({
                 binaryPrivateKey: _elm_lang$core$Native_List.fromArray([])
                 , hexPrivateKey: ""
+                , wifPrivateKey: ""
                 , binaryPublicKey: binaryPublicKey
                 , hexPublicKey: hexPublicKey
                 , publicKeyHash: publicKeyHash
@@ -26335,6 +26340,7 @@ var _jam_tech$elm_neo$Native_Neo = (function () {
             return _elm_lang$core$Result$Ok({
                 binaryPrivateKey: _elm_lang$core$Native_List.fromArray([])
                 , hexPrivateKey: ""
+                , wifPrivateKey: ""
                 , binaryPublicKey: _elm_lang$core$Native_List.fromArray(binaryPublicKey)
                 , hexPublicKey: hexPublicKey
                 , publicKeyHash: publicKeyHash

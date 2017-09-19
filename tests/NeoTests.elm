@@ -111,6 +111,7 @@ expectedAccount1 : Account
 expectedAccount1 =
  { binaryPrivateKey = []
  , hexPrivateKey = ""
+ , wifPrivateKey = ""
  , binaryPublicKey = [3,240,242,93,113,13,239,73,95,180,139,70,69,96,57,176,114,70,135,28,189,45,194,132,51,22,170,24,82,67,206,196,214]
  , hexPublicKey = "03f0f25d710def495fb48b46456039b07246871cbd2dc2843316aa185243cec4d6"
  , publicKeyHash = "dc4c56397ec23e464ab31012c17d8f4c027390ff"
@@ -466,6 +467,7 @@ account : Account
 account =
     { binaryPrivateKey = binaryPrivateKey
     , hexPrivateKey = hexPrivateKey
+    , wifPrivateKey = wif
     , binaryPublicKey = binaryPublicKey
     , hexPublicKey = hexPublicKey
     , publicKeyHash = "6375ccb1d4b858877b3aa73529774041d7173fc3"
@@ -478,6 +480,7 @@ publicAccount : Account
 publicAccount =
     { binaryPrivateKey = []
     , hexPrivateKey = ""
+    , wifPrivateKey = ""
     , binaryPublicKey = binaryPublicKey
     , hexPublicKey = hexPublicKey
     , publicKeyHash = "6375ccb1d4b858877b3aa73529774041d7173fc3"
@@ -490,6 +493,7 @@ emptyAccount : Account
 emptyAccount =
     { binaryPrivateKey = []
     , hexPrivateKey = ""
+    , wifPrivateKey = ""
     , binaryPublicKey = []
     , hexPublicKey = ""
     , publicKeyHash = ""

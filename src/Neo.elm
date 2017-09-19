@@ -268,6 +268,7 @@ container for wallet info
 type alias Account =
     { binaryPrivateKey : BinaryPrivateKey
     , hexPrivateKey : HexPrivateKey
+    , wifPrivateKey : Wif
     , binaryPublicKey : BinaryPublicKey
     , hexPublicKey : HexPublicKey
     , publicKeyHash : PublicKeyHash
